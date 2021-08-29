@@ -9,7 +9,7 @@ Then:
 const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
-const  db = require("db");
+//const  db = require("db");
 
 const wss = new ws.Server({noServer: true});
 
@@ -74,7 +74,7 @@ function onSocketConnect(ws) {
     var r= JSON.parse(message);
 
     if(r.url == "/register"){
-      db.create(r.data);
+     // db.create(r.data);
     }
 
     else if (r.url == "/chat"){
@@ -89,10 +89,10 @@ function onSocketConnect(ws) {
     }
 
     else if (r.url == "/login"){
-      if(db.login(r.data)){
+      /*if(db.login(r.data)){
         for(let client of clients) {
         client.send(JSON.stringify({status : "connecte"}));
-      }
+      }*/
         
       }
       else{
