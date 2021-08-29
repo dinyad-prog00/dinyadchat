@@ -10,15 +10,14 @@ const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
 //const  db = require("db");
-const PORT = process.env.PORT || 3000;
 
-const wss = new ws.Server({port : PORT});
+const wss = new ws.Server({noServer: true});
 
 const clients = new Set();
 
 function accept(req, res) {
 
-  if (req.url == '/' && req.headers.upgrade &&
+  if (req.url == '/ws' && req.headers.upgrade &&
       req.headers.upgrade.toLowerCase() == 'websocket' &&
       // can be Connection: keep-alive, Upgrade
       req.headers.connection.match(/\bupgrade\b/i)) {
