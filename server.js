@@ -17,7 +17,7 @@ const clients = new Set();
 
 function accept(req, res) {
 
-  if (req.url == '/ws' && req.headers.upgrade &&
+  if (req.url == '/' && req.headers.upgrade &&
       req.headers.upgrade.toLowerCase() == 'websocket' &&
       // can be Connection: keep-alive, Upgrade
       req.headers.connection.match(/\bupgrade\b/i)) {
