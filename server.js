@@ -88,11 +88,11 @@ function onSocketConnect(ws) {
       }
     }
 
-    else if (r.url == "/login"){
-      /*if(db.login(r.data)){
+    /*else if (r.url == "/login"){
+      if(db.login(r.data)){
         for(let client of clients) {
         client.send(JSON.stringify({status : "connecte"}));
-      }*/
+      }
         
       }
       else{
@@ -101,7 +101,7 @@ function onSocketConnect(ws) {
         client.send(JSON.stringify({status : "error"}));
       }
     }
-      }
+      }*/
   });
 
   ws.on('close', function() {
