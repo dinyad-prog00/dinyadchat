@@ -15,7 +15,7 @@
   "author": "Dinyad",
   "license": "ISC",
   "engines": {
-    "node": "0.8.14",
-    "npm": "1.1.65"
+    "node": "12.22.1",
+    "npm": "6.14.12"
   }
 }
