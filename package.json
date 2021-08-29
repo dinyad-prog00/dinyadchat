@@ -1,0 +1,21 @@
+{
+  "name": "dinyadchat",
+  "version": "1.0.0",
+  "description": "Discussion instantanée",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Dinyad",
+  "license": "ISC",
+  "engines": {
+    "node": "0.8.14",
+    "npm": "1.1.65"
+  }
+}

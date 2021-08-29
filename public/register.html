@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<title>Collapse</title>
+
+	
+</head>
+<body>
+
+<div class="card m-2">
+	<div class="card-head p-2 bg-primary" data-bs-target="#toh" data-bs-toggle="collapse">
+		Entete de card 
+		<a href="" data-bs-target="#toh" data-bs-toggle="collapse"> <span class="badge badge-white">Cacher</span></a>
+		<a href="" data-bs-target="#toh" data-bs-toggle="remove"> <span class="badge badge-white">Cacher</span></a>
+	</div>
+	<div class="card-body collapse show" id="toh">
+		<form>
+			<input type="text" name="pd" id="pd" class="form-control">
+			<input type="password" name="pwd" id="pwd" class="form-control">
+			<button class="btn btn-primary form-control" id="btn">S'inscrire</button>
+		</form>
+	</div>
+</div>
+
+
+<script>
+/*let url = location.host == 'localhost' ?
+  'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
+  `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
+  `wss://javascript.info/article/websocket/chat/ws`; // prod integration with javascript.info*/
+
+//let url = 'ws://localhost:8080/ws';
+let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://192.168.43.241:8080/ws";
+let socket = new WebSocket(url);
+
+// send message from the form
+var btn = document.getElementById("btn");
+var pwd = document.getElementById("pwd");
+var pd = document.getElementById("pd");
+btn.onclick = function() {
+  
+  const data = JSON.stringify({ url : "/register", data : { sd : pd.value , pwd : pwd.value } });
+  pd.value ="";
+  pwd.value="";
+  socket.send(data);
+  return false;
+};
+
+// handle incoming messages
+socket.onmessage = function(event) {
+  //let incomingMessage = JSON.parse(event.data);
+  //showMessage(incomingMessage.msg+"  ==> id : "+incomingMessage.id);
+};
+
+socket.onclose = event => console.log(`Closed ${event.code}`);
+
+// show message in div#messages
+function showMessage(message) {
+  let messageElem = document.createElement('div');
+  messageElem.className="p-2 offset-2 card col-10  bg-primary text-white border border-rounded";
+  messageElem.textContent = message;
+  document.getElementById('cp').prepend(messageElem);
+}
+</script>
+
+<script type="text/javascript" src="bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
