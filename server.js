@@ -113,7 +113,7 @@ function onSocketConnect(ws) {
 let log;
 if (!module.parent) {
   log = console.log;
-  http.createServer(accept).listen(8080);
+  http.createServer(accept).listen(process.env.PORT || 8080, "127.0.0.1");;
 } else {
   // to embed into javascript.info
   log = function() {};
