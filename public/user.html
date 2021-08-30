@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="jquery.min.js"></script>
+
+    
+	<title>DinyadChat</title>
+
+	
+</head>
+<body class="h-100">
+	<div class="h-100 d-table w-100">
+		<div class="align-middle  m-1 d-table-cell  text-center ">
+		<h2>DinyadChat</h2>
+		<h4 class="text-muted" id="salle">Salle Les Fans #12554445</h4>
+		<div class="card col-md-4 offset-md-4 p-2">
+		<div class="input-group">
+			<label class="input-group-text">Pseudo</label>
+			<input type="text" name="user" id="user" class="form-control">
+			
+		</div><br>
+		<a id="entrer" class="btn btn-success mt-2">Entrer</a>
+		</div>
+  
+		</div>
+	</div>
+	
+  
+
+<script>
+/*let url = location.host == 'localhost' ?
+  'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
+  `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
+  `wss://javascript.info/article/websocket/chat/ws`; // prod integration with javascript.info*/
+
+//let url = "ws://dinyadchat.herokuapp.com";
+var user = document.getElementById("user");
+var entrer = document.getElementById("entrer");
+var salle = document.getElementById("salle");
+
+function froom(url) {
+  return url.substr(3,8);
+}
+
+salle.textContent="Salle #"+froom(location.pathname);
+
+user.onchange = function() {
+	entrer.href=location+"9useryt9"+user.value.replace(" ","");
+}
+
+entrer.onclick=function() {
+if(user.value == ""){
+		var u =prompt("Entrer le nom à utiliser dans la discussion comme pseudo !");
+		if(u){
+			entrer.href=location+"9useryt9"+u.replace(" ","");
+			user.value=u;
+		}
+
+		else{
+			while(!u){
+				var u =prompt("Pseudo obligatoire");
+					if(u){
+						entrer.href=location+"9useryt9"+u.replace(" ","");
+						user.value=u;
+					}
+			}
+		}
+		
+	}
+}
+
+</script>
+
+<script type="text/javascript" src="bootstrap.bundle.min.js"></script>
+</body>
+</html>

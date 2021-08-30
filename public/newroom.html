@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="jquery.min.js"></script>
+
+    
+	<title>DinyadChat</title>
+
+	
+</head>
+<body class="h-100">
+	<div class="h-100 d-table w-100">
+		<div class="align-middle  m-1 d-table-cell  text-center ">
+		<h2>DinyadChat</h2>
+		<h6 class="text-muted col-md-6 col-10 offset-1 mt-3 mb-3 offset-md-3">Créer une salle, partager le lien à vos amis et discuter instantanément. Les messages sont perdus à la fin de la dicussion !</h6>
+		<div class="card col-6 offset-3 col-md-4 offset-md-4 p-2" id="lien">
+		
+		<a id="url"></a>
+		<button id="entrer" class="btn btn-success mt-2">Créer</button>
+		
+		</div>
+		<div class="card col-6 offset-3 col-md-4 offset-md-4 mt-2 p-2" id="sh">
+		
+		<button class="btn btn-primary m-2" id="copi" data-target="#url">Copier  </button>
+			<button class="btn btn-success m-2 "><a href="" id="p" class="text-white text-decoration-none">Partager</a></button>
+		</div>
+		
+  
+		</div>
+	</div>
+	
+  
+
+<script>
+/*let url = location.host == 'localhost' ?
+  'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
+  `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
+  `wss://javascript.info/article/websocket/chat/ws`; // prod integration with javascript.info*/
+
+//let url = "ws://dinyadchat.herokuapp.com";
+var user = document.getElementById("user");
+var entrer = document.getElementById("entrer");
+var l = document.getElementById("lien");
+var copi = document.getElementById("copi");
+var a = document.getElementById("url");
+var p = document.getElementById("p");
+
+$("#sh").hide();
+
+
+
+//entrer.href=location.origin+"/newroom";
+let socket=null;
+let url =location.origin.replace(/^http/, 'ws')+"/newroom";
+entrer.onclick=function() {
+
+	
+	
+	socket = new WebSocket(url);
+	socket.onmessage=(event)=>{
+	lien=location.origin+event.data;
+	$("#entrer").hide();
+	$("#sh").show();
+	a.href=lien;
+	a.textContent=lien;
+	l.prepend(a);
+	p.href="https://wa.me/?text="+lien;
+	}
+
+
+}
+
+function docopy() {
+    // Cible de l'élément qui doit être copié
+    var target = this.dataset.target;
+    var fromElement = document.querySelector(target);
+    if(!fromElement) return;
+
+    // Sélection des caractères concernés
+    var range = document.createRange();
+    var selection = window.getSelection();
+    range.selectNode(fromElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    try {
+        // Exécution de la commande de copie
+        var result = document.execCommand('copy');
+        if (result) {
+            // La copie a réussi
+            alert('Copié !');
+        }
+    }
+    catch(err) {
+        // Une erreur est surevnue lors de la tentative de copie
+        alert(err);
+    }
+
+    // Fin de l'opération
+    selection = window.getSelection();
+    if (typeof selection.removeRange === 'function') {
+        selection.removeRange(range);
+    } else if (typeof selection.removeAllRanges === 'function') {
+        selection.removeAllRanges();
+    }
+}
+
+
+
+copi.addEventListener("click",docopy);
+
+</script>
+
+<script type="text/javascript" src="bootstrap.bundle.min.js"></script>
+</body>
+</html>

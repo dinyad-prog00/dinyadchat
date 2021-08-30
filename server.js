@@ -10,22 +10,61 @@ const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
 //const  db = require("db");
-var nb = 1;
+var nb = 0;
 
 const wss = new ws.Server({noServer: true});
 
 const clients = new Set();
+const pseudos = new Set();
+
+// { users : [{ name : "" , lastcnt : "", ws : "", satatus :""}] , messages : [{date : "",user : "",msg :""}]}
+var rooms = {};
+rooms['11111111']={users :[],messages : []};
+
+//console.log(rooms);
+function room(url) {
+  return url.substr(3,8);
+}
+
+
+function id(id){
+  for (var i = 8-id.length; i > 0; i--) {
+    id="0"+id;
+  }
+
+  return id;
+}
+console.log(id("0"));
+function user(url) {
+  return url.substr(11+room(url).length,url.length);
+}
+//var s="/dy12345678";
+//console.log(s.indexOf("/ey"));
+
 
 function accept(req, res) {
 
-  if (req.url == '/' && req.headers.upgrade &&
+  if (req.url.indexOf("/dy") ==0 && req.headers.upgrade &&
       req.headers.upgrade.toLowerCase() == 'websocket' &&
       // can be Connection: keep-alive, Upgrade
       req.headers.connection.match(/\bupgrade\b/i)) {
-      //const id = parseInt(req.params.id);
-      const id=54;
-      console.log(id);
-      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws)=>{onSocketConnect(ws,id);});
+      const args={};
+      args.room= room(req.url);
+      args.user= user(req.url);
+
+    
+      
+      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws)=>{onSocketConnect(ws,args);});
+  }
+  else if (req.url=="/newroom" && req.headers.upgrade &&
+      req.headers.upgrade.toLowerCase() == 'websocket' &&
+      // can be Connection: keep-alive, Upgrade
+      req.headers.connection.match(/\bupgrade\b/i)) {
+      
+
+    
+      
+      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onSocketConnect2);
   } 
   else if (req.url == '/register') { // index.html
     fs.createReadStream('public/register.html').pipe(res);
@@ -35,10 +74,23 @@ function accept(req, res) {
     fs.createReadStream('public/login.html').pipe(res);
   }
 
-  else if (req.url == '/home') { // index.html
+  else if (req.url.indexOf("/dy")==0 && req.url.indexOf("9useryt9")!=-1) { // index.html
     
     fs.createReadStream('public/home.html').pipe(res);
-  } 
+  }
+
+  else if (req.url.indexOf("/dy")==0 && req.url.length==11) { // index.html
+    
+    fs.createReadStream('public/user.html').pipe(res);
+  }
+
+  else if (req.url=="/" || req.url=="/newclass") { // index.html
+    
+    fs.createReadStream('public/newroom.html').pipe(res);
+  }
+
+
+   
 
   else if (req.url == '/bootstrap.min.css') { // index.html
     fs.createReadStream('public/bootstrap.min.css').pipe(res);
@@ -70,9 +122,66 @@ function accept(req, res) {
   }
 }
 
+function findUser(id){
+  rm=rooms[id.room];
+  for (var i = rm.users.length - 1; i >= 0; i--) {
+    if(id.user==rm.users[i].name){
+      console.log("found");
+      return rm.users[i];
+
+    }
+    
+  }
+  console.log("no found");
+  return false;
+
+
+}
+
+function deux(a) {
+  if(a.length == 1)
+    return "0"+a;
+  else
+    return a;
+}
+
 function onSocketConnect(ws,id) {
-  clients.add(ws);
-  log("new connection : salle "+id);
+  rm=rooms[id.room];
+  if(rm){
+
+  for (var i = rm.users.length - 1; i >= 0; i--) {
+        if(rm.users[i].actif)
+            rm.users[i].ws.send(JSON.stringify({url : "/newuser", name : id.user}));
+  }
+
+  u=findUser(id);
+  msgs=rm.messages;
+
+  if(u){
+    u.ws=ws;
+    u.actif=true;
+    
+
+    for (var i = msgs.length - 1; i >= 0; i--) {
+      log(`${msgs[i].date} --- ${u.last}`);
+      if(msgs[i].user != id.user && msgs[i].date >= u.last)
+        ws.send(JSON.stringify(msgs[i]));
+    }
+  }
+  else{
+    log("n f")
+    rm.users.push({ws : ws, actif : true, name : id.user,last : "00:00"});
+    for (var i = msgs.length - 1; i >= 0; i--) {
+        ws.send(JSON.stringify(msgs[i]));
+    }
+  }
+  
+  
+  log(rooms);
+
+
+
+  log("new connection :");
 
   ws.on('message', function(message) {
     var r= JSON.parse(message);
@@ -83,13 +192,23 @@ function onSocketConnect(ws,id) {
 
     else if (r.url == "/chat"){
        data = r.data;
-        log(`message received: ${data.msg}`);
+        log(`message received: ${data.msg} ${data.room}`);
 
     //message = message.slice(0, 50); // max message length will be 50
 
+      rm = rooms[data.room];
+      if(rm){
+        for (var i = rm.users.length - 1; i >= 0; i--) {
+          if(rm.users[i].actif)
+            rm.users[i].ws.send(JSON.stringify(data));
+        }
+
+        rm.messages.push(data);
+      }
+      /*
       for(let client of clients) {
         client.send(JSON.stringify(data));
-      }
+      }*/
     }
 
     /*else if (r.url == "/login"){
@@ -109,9 +228,42 @@ function onSocketConnect(ws,id) {
   });
 
   ws.on('close', function() {
+    rm = rooms[id.room];
+    u=findUser(id);
     log(`connection closed`);
-    clients.delete(ws);
+    for (var i = rm.users.length - 1; i >= 0; i--) {
+        if(rm.users[i].actif)
+            rm.users[i].ws.send(JSON.stringify({url : "/quit", name : id.user}));
+   }
+    var dat = new Date();
+    var h = dat.getHours();
+    var min = dat.getMinutes();
+    u.ws=0;
+    u.actif=false;
+    u.last=deux(h+"")+":"+deux(min+"");
+    log(u.last);
+    
   });
+
+}
+else{
+  ws.send(JSON.stringify({url : "/notfound",msg : "Salut "+id.user+". La salle actuelle n'existe pas. Veuillez vérifier si le lien est correct ou le redemander à votre ami ou encore, créer votre propre lien et partager."}));
+}
+}
+
+
+function onSocketConnect2(ws) {
+  
+  
+  iidd=id(nb+"");
+  nb=nb+1;
+  rooms[iidd]={users :[],messages : []};
+  lien="/dy"+iidd;
+  ws.send(lien);
+  log(rooms);
+
+
+ 
 }
 
 let log;
@@ -124,3 +276,5 @@ if (!module.parent) {
   // log = console.log;
   exports.accept = accept;
 }
+
+log("18:9" >= "18:12")

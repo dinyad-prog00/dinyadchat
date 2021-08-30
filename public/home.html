@@ -15,14 +15,14 @@
 	<div class="h-100 d-table w-100">
 		<div class="align-middle  m-1 d-table-cell  text-center ">
 		<h2>DinyadChat</h2>
-		<h4 class="text-muted">Salle Les Fans #12554445</h4>
+		<h4 class="text-muted" id="salle">Salle Les Fans #12554445</h4>
 		<div class="card col-md-4 offset-md-4 p-2">
 		<div class="input-group">
 			<label class="input-group-text">Pseudo</label>
-			<input type="text" name="user" id="user" class="form-control">
+			<input type="text" name="user" readonly="" id="user" class="form-control">
 			
 		</div><br>
-		<button id="entrer" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#mym">Entrer</button>
+		<button id="entrer" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#mym">Commencer</button>
 		</div>
   
 		</div>
@@ -184,17 +184,30 @@
   `wss://javascript.info/article/websocket/chat/ws`; // prod integration with javascript.info*/
 
 //let url = "ws://dinyadchat.herokuapp.com";
-let url = location.origin.replace(/^http/, 'ws');
+let url = location.origin.replace(/^http/, 'ws')+location.pathname;
 
-//console.log(url);
+//alert();
 //let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://dinyadchat.herokuapp.com:8080/ws";
 let socket = new WebSocket(url);
 
+
 var recnt=true;
+function froom(url) {
+  return url.substr(3,8);
+}
+
+function fuser(url) {
+  return url.substr(19,url.length);
+}
 //Onopen
+
+var salle = document.getElementById("salle");
+
+salle.textContent="Salle #"+froom(location.pathname);
+
 const onopen= function(event) {
 	// body...
-	yp.textContent="Connecté(e) en tant que "+user.value;
+	yp.textContent="Connecté(e), "+user.value;
 	yp.className="text-success";
 	$("#spinner").hide();
 	$("#login").hide();
@@ -205,25 +218,40 @@ const onopen= function(event) {
 //Onmessage
 const onmessage = function(event) {
 	let incomingMessage = JSON.parse(event.data);
-  if(incomingMessage.id == autor){
-  	encore = true;
-  }
-  else{
-  	autor = incomingMessage.id;
-  	encore = false;
-  }
+	//alert(incomingMessage.url);
+	if(incomingMessage.url=="/newuser"){
+     printuser(incomingMessage.name);
+	}
+	else if(incomingMessage.url=="/quit"){
+     printquit(incomingMessage.name);
+	}
 
-  if(firt){
-  	const deft = document.getElementById("deft");
-  	deft.remove();
-  	firt=false;
-  }
-  if(incomingMessage.id==user.value){
-  	showMessage(incomingMessage,"me");
-  }
-  else{
-  	showMessage(incomingMessage,"lui");
-  }
+	else if(incomingMessage.url=="/notfound"){
+    showMessage(incomingMessage,"lui");
+    recnt=false;
+    socket.close();
+	}
+	else{
+	  if(incomingMessage.id == autor){
+	  	encore = true;
+	  }
+	  else{
+	  	autor = incomingMessage.id;
+	  	encore = false;
+	  }
+
+	  if(firt){
+	  	const deft = document.getElementById("deft");
+	  	deft.remove();
+	  	firt=false;
+	  }
+	  if(incomingMessage.id==user.value){
+	  	showMessage(incomingMessage,"me");
+	  }
+	  else{
+	  	showMessage(incomingMessage,"lui");
+	  }
+	}
 
   scroller();
   
@@ -281,6 +309,14 @@ var y = document.getElementById("you");
 var yp = document.getElementById("youp");
 var mym = document.getElementById("mym");
 
+
+user.value=fuser(location.pathname);
+function deux(a) {
+  if(a.length == 1)
+    return "0"+a;
+  else
+    return a;
+}
 user.onchange = function() {y.textContent=user.value; yp.textContent="Connecté(e) en tent que "+user.value;}
 btn.onclick = function() {
 	var dat = new Date();
@@ -288,7 +324,7 @@ btn.onclick = function() {
 	var min = dat.getMinutes();
 	if(msg.value!=""){
   let outgoingMessage = msg.value;
-  const data = JSON.stringify({url : "/chat" ,data : {id: user.value, msg : outgoingMessage ,date : h+":"+min}});
+  const data = JSON.stringify({url : "/chat" ,data : {id: user.value, msg : outgoingMessage ,date : deux(h+"")+":"+deux(min+""),room : froom(location.pathname)}});
   socket.send(data);
   msg.value="";
 }
@@ -306,6 +342,19 @@ function scroller(){
 	h=h+100;
 }
 
+function printuser(n) {
+	var div =  document.createElement('div');
+	div.className="card border border-secondary text-center col-10 offset-1 rounded-3 bg-light text-muted  p-1 mt-2";
+	div.textContent=n+" vient d'entrer dans le chat";
+	document.getElementById('cp').append(div);
+}
+
+function printquit(n) {
+	var div =  document.createElement('div');
+	div.className="card border border-warning text-center col-10 offset-1 rounded-3 bg-light text-muted  p-1 mt-2";
+	div.textContent=n+" vient de quitter le chat";
+	document.getElementById('cp').append(div);
+}
 
 // show message in div#messages
 function showMessage(message,t) {
@@ -445,31 +494,7 @@ $("#login").click((event)=>{
 	recnt=true;
 	onclose(event);
 });
-$("#entrer").click((event)=>{
-	if(user.value == ""){
-		var u =prompt("Entrer le nom à utiliser dans la discussion comme pseudo !");
-		if(u){
-			user.value=u;
-			socket.close();
-		}
-
-		else{
-			while(!u){
-				var u =prompt("Pseudo obligatoire");
-					if(u){
-						user.value=u;
-						socket.close();
-					}
-			}
-		}
-		
-	}
-
-	else
-	{
-		//$("#mym").show();
-	}
-})
+	
 </script>
 
 <script type="text/javascript" src="bootstrap.bundle.min.js"></script>
