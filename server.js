@@ -162,11 +162,7 @@ function onSocketConnect(ws,id) {
     u.actif=true;
     
 
-    for (var i = msgs.length - 1; i >= 0; i--) {
-      log(`${msgs[i].date} --- ${u.last}`);
-      if(msgs[i].user != id.user && msgs[i].date >= u.last)
-        ws.send(JSON.stringify(msgs[i]));
-    }
+    
   }
   else{
     log("n f")
