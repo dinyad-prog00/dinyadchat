@@ -10,6 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
 //const  db = require("db");
+var nb = 1;
 
 const wss = new ws.Server({noServer: true});
 

@@ -4,6 +4,8 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="jquery.min.js"></script>
+
     
 	<title>DinyadChat</title>
 
@@ -20,7 +22,7 @@
 			<input type="text" name="user" id="user" class="form-control">
 			
 		</div><br>
-		<button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#mym">Entrer</button>
+		<button id="entrer" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#mym">Entrer</button>
 		</div>
   
 		</div>
@@ -69,7 +71,22 @@
 			
 				<div class="spinner-border text-secondary" role="status" id="spinner">
           	<span class="visually-hidden">Loading...</span>
-        	</div>
+        </div>
+        <div id="logout">
+        	<a title="Se deconnecter"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffffff" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+  					<path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+  					<path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+				</svg>
+					</a>
+        </div>
+
+        <div id="login">
+        	<a title="Se connecter"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ffffff" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
+  					<path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
+  					<path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+  					</a>
+</svg>
+        </div>
 				
 			<button class="btn btn-close" data-bs-dismiss="modal"></button>
 			</div>
@@ -173,13 +190,15 @@ let url = location.origin.replace(/^http/, 'ws');
 //let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://dinyadchat.herokuapp.com:8080/ws";
 let socket = new WebSocket(url);
 
-
+var recnt=true;
 //Onopen
 const onopen= function(event) {
 	// body...
 	yp.textContent="Connecté(e) en tant que "+user.value;
 	yp.className="text-success";
 	$("#spinner").hide();
+	$("#login").hide();
+	$("#logout").show();
 
 }
 
@@ -216,7 +235,12 @@ var onclose = function(event) {
 	console.log(`Closed ${event.code}`);
 	yp.textContent="Deconnecté(e)";
 	yp.className="text-danger";
+	$("#logout").hide();
 
+
+
+	if(recnt){
+	$("#login").hide();
   yp.textContent="Reconnexion";
   yp.className="text-white";
   $("#spinner").show();
@@ -227,6 +251,7 @@ var onclose = function(event) {
 	socket.addEventListener("open",onopen);
 	socket.addEventListener("message",onmessage);
 	socket.addEventListener("close",onclose);
+}
 
 	//yp.textContent="Reconnexion";
 	
@@ -240,6 +265,10 @@ socket.addEventListener("open",onopen);
 socket.addEventListener("message",onmessage);
 socket.addEventListener("close",onclose);
 
+
+
+
+
 let encore = false;
 let firt =true;
 let autor = "123456789@$#123456789";
@@ -250,6 +279,8 @@ var msg = document.getElementById("msg");
 var user = document.getElementById("user");
 var y = document.getElementById("you");
 var yp = document.getElementById("youp");
+var mym = document.getElementById("mym");
+
 user.onchange = function() {y.textContent=user.value; yp.textContent="Connecté(e) en tent que "+user.value;}
 btn.onclick = function() {
 	var dat = new Date();
@@ -402,12 +433,45 @@ function showMessage(message,t) {
 }
 
 
-setTimeout(()=>{
-  socket.close();
-},8000);
+$("#logout").click((event)=>{
+	recnt=false;
+	socket.close();
+	$("#logout").hide();
+	$("#login").show();
+
+});
+
+$("#login").click((event)=>{
+	recnt=true;
+	onclose(event);
+});
+$("#entrer").click((event)=>{
+	if(user.value == ""){
+		var u =prompt("Entrer le nom à utiliser dans la discussion comme pseudo !");
+		if(u){
+			user.value=u;
+			socket.close();
+		}
+
+		else{
+			while(!u){
+				var u =prompt("Pseudo obligatoire");
+					if(u){
+						user.value=u;
+						socket.close();
+					}
+			}
+		}
+		
+	}
+
+	else
+	{
+		//$("#mym").show();
+	}
+})
 </script>
 
 <script type="text/javascript" src="bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="jquery.min.js"></script>
 </body>
 </html>
