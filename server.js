@@ -21,7 +21,10 @@ function accept(req, res) {
       req.headers.upgrade.toLowerCase() == 'websocket' &&
       // can be Connection: keep-alive, Upgrade
       req.headers.connection.match(/\bupgrade\b/i)) {
-      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onSocketConnect);
+      //const id = parseInt(req.params.id);
+      const id=54;
+      console.log(id);
+      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws)=>{onSocketConnect(ws,id);});
   } 
   else if (req.url == '/register') { // index.html
     fs.createReadStream('public/register.html').pipe(res);
@@ -66,9 +69,9 @@ function accept(req, res) {
   }
 }
 
-function onSocketConnect(ws) {
+function onSocketConnect(ws,id) {
   clients.add(ws);
-  log(`new connection`);
+  log("new connection : salle "+id);
 
   ws.on('message', function(message) {
     var r= JSON.parse(message);

@@ -58,6 +58,7 @@
 				<div class="d-flex">
 					<img src="aaa.png" class="img-thumbnail rounded-circle align-self-center m-1" alt="..." width="20%">
 					<div class="m-1">
+						
 						<h4 class="modal-title ">Dinyad chat</h4>
 						<span class="text-muted" id="youp">Vous en tant que <em id="you"></em></span>
 					</div>
@@ -66,7 +67,9 @@
 				</div>
 			
 			
-				
+				<div class="spinner-border text-secondary" role="status" id="spinner">
+          	<span class="visually-hidden">Loading...</span>
+        	</div>
 				
 			<button class="btn btn-close" data-bs-dismiss="modal"></button>
 			</div>
@@ -172,11 +175,11 @@ let socket = new WebSocket(url);
 
 
 //Onopen
-
 const onopen= function(event) {
 	// body...
 	yp.textContent="Connecté(e) en tant que "+user.value;
 	yp.className="text-success";
+	$("#spinner").hide();
 
 }
 
@@ -214,8 +217,9 @@ var onclose = function(event) {
 	yp.textContent="Deconnecté(e)";
 	yp.className="text-danger";
 
- yp.textContent="Reconnexion";
- yp.className="text-info";
+  yp.textContent="Reconnexion";
+  yp.className="text-white";
+  $("#spinner").show();
 	
 
 	
