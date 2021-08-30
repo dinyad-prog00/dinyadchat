@@ -59,7 +59,7 @@
 					<img src="aaa.png" class="img-thumbnail rounded-circle align-self-center m-1" alt="..." width="20%">
 					<div class="m-1">
 						<h4 class="modal-title ">Dinyad chat</h4>
-						<span class="text-muted">Vous en tant que <em id="you"></em></span>
+						<span class="text-muted" id="youp">Vous en tant que <em id="you"></em></span>
 					</div>
 					
 
@@ -170,6 +170,72 @@ let url = location.origin.replace(/^http/, 'ws');
 //let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://dinyadchat.herokuapp.com:8080/ws";
 let socket = new WebSocket(url);
 
+
+//Onopen
+
+const onopen= function(event) {
+	// body...
+	yp.textContent="Connecté(e) en tant que "+user.value;
+	yp.className="text-success";
+
+}
+
+//Onmessage
+const onmessage = function(event) {
+	let incomingMessage = JSON.parse(event.data);
+  if(incomingMessage.id == autor){
+  	encore = true;
+  }
+  else{
+  	autor = incomingMessage.id;
+  	encore = false;
+  }
+
+  if(firt){
+  	const deft = document.getElementById("deft");
+  	deft.remove();
+  	firt=false;
+  }
+  if(incomingMessage.id==user.value){
+  	showMessage(incomingMessage,"me");
+  }
+  else{
+  	showMessage(incomingMessage,"lui");
+  }
+
+  scroller();
+  
+}
+
+
+//Onclose
+var onclose = function(event) {
+	console.log(`Closed ${event.code}`);
+	yp.textContent="Deconnecté(e)";
+	yp.className="text-danger";
+
+ yp.textContent="Reconnexion";
+ yp.className="text-info";
+	
+
+	
+  socket = new WebSocket(url);
+	socket.addEventListener("open",onopen);
+	socket.addEventListener("message",onmessage);
+	socket.addEventListener("close",onclose);
+
+	//yp.textContent="Reconnexion";
+	
+	
+
+}
+
+
+//Add Listener
+socket.addEventListener("open",onopen);
+socket.addEventListener("message",onmessage);
+socket.addEventListener("close",onclose);
+
 let encore = false;
 let firt =true;
 let autor = "123456789@$#123456789";
@@ -179,7 +245,8 @@ var btn = document.getElementById("send");
 var msg = document.getElementById("msg");
 var user = document.getElementById("user");
 var y = document.getElementById("you");
-user.onchange = function() {y.textContent=user.value;}
+var yp = document.getElementById("youp");
+user.onchange = function() {y.textContent=user.value; yp.textContent="Connecté(e) en tent que "+user.value;}
 btn.onclick = function() {
 	var dat = new Date();
 	var h = dat.getHours();
@@ -204,34 +271,6 @@ function scroller(){
 	h=h+100;
 }
 
-// handle incoming messages
-socket.onmessage = function(event) {
-  let incomingMessage = JSON.parse(event.data);
-  if(incomingMessage.id == autor){
-  	encore = true;
-  }
-  else{
-  	autor = incomingMessage.id;
-  	encore = false;
-  }
-
-  if(firt){
-  	var deft = document.getElementById("deft");
-  	deft.remove();
-  	firt=false;
-  }
-  if(incomingMessage.id==user.value){
-  	showMessage(incomingMessage,"me");
-  }
-  else{
-  	showMessage(incomingMessage,"lui");
-  }
-
-  scroller();
-  
-};
-
-socket.onclose = event => console.log(`Closed ${event.code}`);
 
 // show message in div#messages
 function showMessage(message,t) {
@@ -357,6 +396,11 @@ function showMessage(message,t) {
   
    document.getElementById('cp').append(div);
 }
+
+
+setTimeout(()=>{
+  socket.close();
+},8000);
 </script>
 
 <script type="text/javascript" src="bootstrap.bundle.min.js"></script>
