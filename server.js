@@ -22,7 +22,7 @@ var rooms = {};
 rooms['11111111']={users :[],messages : []};
 
 for (var i = 0; i <= 40; i++) {
-  rooms[id(nb)]={users :[],messages : []};
+  rooms[id(nb+"")]={users :[],messages : []};
   nb=nb+1;
 }
 
