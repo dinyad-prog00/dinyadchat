@@ -10,23 +10,23 @@ const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
 //const  db = require("db");
-var nb = 0;
 
-var tag=0;
+fs.readFile("data.json", 'utf8', function(err, data) {
+
+var donnees = JSON.parse(data); 
+var nb = donnees.nb ;
+var rooms = donnees.rooms;
+var tag=donnees.tag;
 
 const wss = new ws.Server({noServer: true});
 
-const clients = new Set();
-const pseudos = new Set();
+//const clients = new Set();
+//const pseudos = new Set();
 
 // { users : [{ name : "" , lastcnt : "", ws : "", satatus :""}] , messages : [{date : "",user : "",msg :""}]}
-var rooms = {};
-rooms['11111111']={users :[],messages : []};
 
-for (var i = 0; i <= 55; i++) {
-  rooms[id(nb+"")]={users :[],messages : []};
-  nb=nb+1;
-}
+
+
 
 function room(url) {
   return url.substr(3,8);
@@ -120,6 +120,10 @@ function accept(req, res) {
 
   else if (req.url == '/jquery.min.js') { // index.html
     fs.createReadStream('public/jquery.min.js').pipe(res);
+  }
+
+  else if (req.url == '/donatiendinyadyeto65446036') { // index.html
+    fs.createReadStream('data.json').pipe(res);
   } 
 
   else { // page not found
@@ -235,10 +239,11 @@ function onSocketConnect(ws,id) {
     rm = rooms[id.room];
     u=findUser(id);
     log(`connection closed`);
-    for (var i = rm.users.length - 1; i >= 0; i--) {
+    var i=rm.users.length;
+    for (i = rm.users.length - 1; i >= 0; i--) {
         if(rm.users[i].actif)
             rm.users[i].ws.send(JSON.stringify({url : "/quit", name : id.user}));
-   }
+    }
     var dat = new Date();
     var h = dat.getHours();
     var min = dat.getMinutes();
@@ -246,6 +251,11 @@ function onSocketConnect(ws,id) {
     u.actif=false;
     u.last=deux(h+"")+":"+deux(min+"");
     log(u.last);
+
+
+    if(i<=0){
+      writref(rooms,nb,tag);
+    }
     
   });
 
@@ -280,3 +290,23 @@ if (!module.parent) {
   // log = console.log;
   exports.accept = accept;
 }
+
+
+
+
+
+});//Fin lecture fichier data.json
+
+
+function writref(rooms,nb,tag){
+  
+  
+  let writeStream = fs.createWriteStream("data.json");
+  writeStream.write(JSON.stringify({rooms:rooms,nb:nb,tag:tag}), 'utf-8');
+  writeStream.on('finish', () => {
+   console.log('Fichier mis à jour !');
+});
+writeStream.end();
+
+}
+
