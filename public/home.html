@@ -24,9 +24,19 @@
 		</div><br>
 		<button id="entrer" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#mym">Commencer</button>
 		</div>
-  
+
+		
 		</div>
 	</div>
+
+	<div class="col-10 offset-1 col-md-4 offset-md-4 mt-5" style=" position:absolute;top:0;height:40px;" id="veux">
+				<a id="lcreer" class="text-decoration-none text-white mt-5">
+					<button class="btn btn-secondary  btn-sm form-control">
+							Je veux ma propre salle maintenant
+					</button>
+				</a>
+		</div>	
+  
 	
   <!--
 	
@@ -101,7 +111,7 @@
 					<img src="disc.webp" class=" mx-auto d-block" alt="..." width="70%">
 
 					
-					<h6>Vous venez d'entrer dans le chat, tapez votre message et envoyez.</h6>
+					<h6 id="venezdentrer">Vous venez d'entrer dans le chat, tapez votre message et envoyez.</h6>
 					
 				</div>
 				<!--
@@ -175,9 +185,26 @@
 	
 </div>
 
+<div class="col-6 offset-3 col-md-4 offset-md-4 mt-4" id="creer">
+	<a id="lcreer" class="text-decoration-none text-white"><button class="btn btn-primary  form-control">
+	Créer
+</button></a>
+</div>
 
 
 <script>
+
+	function jveux() {
+		$("#veux").hide();
+		setTimeout(()=>{
+			$("#veux").show();
+			setTimeout(()=>{
+				jveux();
+			},5000)
+		},3000)
+	}
+
+	jveux();
 /*let url = location.host == 'localhost' ?
   'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
   `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
@@ -215,6 +242,12 @@ const onopen= function(event) {
 
 }
 
+
+var lcreer = document.getElementById("lcreer");
+var creer= document.getElementById("creer");
+
+lcreer.href=location.origin;
+
 //Onmessage
 const onmessage = function(event) {
 	let incomingMessage = JSON.parse(event.data);
@@ -230,6 +263,8 @@ const onmessage = function(event) {
     showMessage(incomingMessage,"lui");
     recnt=false;
     socket.close();
+    document.getElementById('cp').append(creer);
+    $("#venezdentrer").hide();
 	}
 	else{
 	  if(incomingMessage.id == autor){
@@ -308,6 +343,7 @@ var user = document.getElementById("user");
 var y = document.getElementById("you");
 var yp = document.getElementById("youp");
 var mym = document.getElementById("mym");
+
 
 
 user.value=fuser(location.pathname);

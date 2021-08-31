@@ -247,7 +247,7 @@ function onSocketConnect(ws,id) {
 
 }
 else{
-  ws.send(JSON.stringify({url : "/notfound",msg : "Salut "+id.user+". La salle actuelle n'existe pas. Veuillez vérifier si le lien est correct ou le redemander à votre ami ou encore, créer votre propre lien et partager."}));
+  ws.send(JSON.stringify({url : "/notfound",msg : "Salut "+id.user+". La salle dans laquelle vous essayez d'entrer n'existe pas. Veuillez vérifier si le lien est correct ou le redemander à votre ami ou encore, créer votre propre lien et partager."}));
 }
 }
 
