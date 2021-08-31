@@ -30,7 +30,7 @@
 	</div>
 
 	<div class="col-10 offset-1 col-md-4 offset-md-4 mt-5" style=" position:absolute;top:0;height:40px;" id="veux">
-				<a id="lcreer" class="text-decoration-none text-white mt-5">
+				<a id="jlcreer" class="text-decoration-none text-white mt-5">
 					<button class="btn btn-secondary  btn-sm form-control">
 							Je veux ma propre salle maintenant
 					</button>
@@ -186,7 +186,7 @@
 </div>
 
 <div class="col-6 offset-3 col-md-4 offset-md-4 mt-4" id="creer">
-	<a id="lcreer" class="text-decoration-none text-white"><button class="btn btn-primary  form-control">
+	<a id="lcreer" href="vv" class=" text-white"><button class="btn btn-primary  form-control">
 	Créer
 </button></a>
 </div>
@@ -205,6 +205,9 @@
 	}
 
 	jveux();
+
+	$("#logout").hide();
+	$("#login").hide();
 /*let url = location.host == 'localhost' ?
   'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
   `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
@@ -244,9 +247,12 @@ const onopen= function(event) {
 
 
 var lcreer = document.getElementById("lcreer");
+var jlcreer = document.getElementById("jlcreer");
 var creer= document.getElementById("creer");
 
 lcreer.href=location.origin;
+jlcreer.href=location.origin;
+//alert(lcreer.href);
 
 //Onmessage
 const onmessage = function(event) {
