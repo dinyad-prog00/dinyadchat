@@ -12,6 +12,8 @@ const ws = new require('ws');
 //const  db = require("db");
 var nb = 0;
 
+var tag=0;
+
 const wss = new ws.Server({noServer: true});
 
 const clients = new Set();
@@ -21,7 +23,7 @@ const pseudos = new Set();
 var rooms = {};
 rooms['11111111']={users :[],messages : []};
 
-for (var i = 0; i <= 50; i++) {
+for (var i = 0; i <= 55; i++) {
   rooms[id(nb+"")]={users :[],messages : []};
   nb=nb+1;
 }
@@ -192,6 +194,8 @@ function onSocketConnect(ws,id) {
 
     else if (r.url == "/chat"){
        data = r.data;
+       data.tag = tag+"";
+       tag=tag+1;
         log(`message received: ${data.msg} ${data.room}`);
 
     //message = message.slice(0, 50); // max message length will be 50
@@ -276,5 +280,3 @@ if (!module.parent) {
   // log = console.log;
   exports.accept = accept;
 }
-
-log("18:9" >= "18:12")

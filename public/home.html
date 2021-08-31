@@ -115,6 +115,7 @@
 					
 				</div>
 				<!--
+				
 				 <div class="mt-2 col-10">
 				<span class="fw-bold">Dinyad Yeto</span>
 					
@@ -123,6 +124,10 @@
 
 						<div class="col">
 							<div class="p-2 rounded-3  border mt-2 ms-1   bg-secondary text-white position-relative">
+
+								<div class="p-1  border-start border-white border-5 o mb-1 rounded-3  " style="background-color: #8c8b94;">
+									<a href="#deft" class="text-decoration-none text-white" ><span class="text-dark">Dinyad</span><br>Ceci est une reférence à un message Ceci est une reférence à un message ... </a>
+								</div>
 
 							<svg width="1em" height="1em" viewBox="0 0 16 16" class="position-absolute top-0 start-0 translate-middle mt-1 bi bi-caret-down-fill" fill="#6c757d" xmlns="http://www.w3.org/2000/svg"><path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
 
@@ -146,6 +151,12 @@
 					<div class="d-flex ">
 					
 					<div class="p-2 col border rounded-3 bg-primary mt-2 me-1 position-relative text-white">
+
+						<div class="p-1  border-start border-white  border-5 o mb-1 rounded-3  " style="background-color: #6a5aeb;">
+								<a href="#deft" class="text-decoration-none text-white" ><span class="text-dark">Vous</span><br>Ceci est une reférence à un message Ceci est une reférence à un message ... </a>
+						</div>
+
+
 						<svg width="1em" height="1em" viewBox="0 0 16 16" class="position-absolute top-0 start-100 translate-middle mt-1 bi bi-caret-down-fill" fill="#0d6efd" xmlns="http://www.w3.org/2000/svg">
 							<path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
 						</svg>
@@ -162,18 +173,26 @@
 				</div>
 
 
-			-->	
+			-->
+			</div >
+
+			<div id="refdiv">
+				
 			</div>
+			
 
 			<div class="modal-footer row " id="to">
+
 				 
-				<input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
-				<button class="btn-sm btn  btn-white  col-2" type="submit" id="send">
-						<svg xmlns="http://www.w3.org/2000/svg" width="45" height="25" fill="#45d055" class="bi bi-symmetry-horizontal" viewBox="0 0 16 16">
-  						<path d="M13.5 7a.5.5 0 0 0 .24-.939l-11-6A.5.5 0 0 0 2 .5v6a.5.5 0 0 0 .5.5h11zm.485 2.376a.5.5 0 0 1-.246.563l-11 6A.5.5 0 0 1 2 15.5v-6a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .485.376zM11.539 10H3v4.658L11.54 10z"/>
-					</svg>
+				
+					<input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
+					<button class="btn-sm btn  btn-white  col-2" type="submit" id="send">
+							<svg xmlns="http://www.w3.org/2000/svg" width="45" height="25" fill="#45d055" class="bi bi-symmetry-horizontal" viewBox="0 0 16 16">
+	  						<path d="M13.5 7a.5.5 0 0 0 .24-.939l-11-6A.5.5 0 0 0 2 .5v6a.5.5 0 0 0 .5.5h11zm.485 2.376a.5.5 0 0 1-.246.563l-11 6A.5.5 0 0 1 2 15.5v-6a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .485.376zM11.539 10H3v4.658L11.54 10z"/>
+						</svg>
 					
 				</button>
+				
 				 
 			</div>
 		
@@ -350,7 +369,11 @@ var y = document.getElementById("you");
 var yp = document.getElementById("youp");
 var mym = document.getElementById("mym");
 
-
+//Referencement
+var refdefined=false;
+var refmsg="";
+var refhref="";
+var refuser="";
 
 user.value=fuser(location.pathname);
 function deux(a) {
@@ -364,9 +387,26 @@ btn.onclick = function() {
 	var dat = new Date();
 	var h = dat.getHours();
 	var min = dat.getMinutes();
+
 	if(msg.value!=""){
   let outgoingMessage = msg.value;
-  const data = JSON.stringify({url : "/chat" ,data : {id: user.value, msg : outgoingMessage ,date : deux(h+"")+":"+deux(min+""),room : froom(location.pathname)}});
+  var tosend = {
+  	url : "/chat" ,
+  	data : {
+  		id: user.value,
+  		msg : outgoingMessage,
+  		date : deux(h+"")+":"+deux(min+""),
+  		room : froom(location.pathname)
+  		}
+  };
+
+  if(refdefined){
+  	tosend.data.ref={msg : refmsg, user : refuser, href : "#"+refhref };
+  	refdefined=false;
+  	document.getElementById('refdiv').innerHTML="";
+  }
+
+  const data = JSON.stringify(tosend);
   socket.send(data);
   msg.value="";
 }
@@ -399,6 +439,7 @@ function printquit(n) {
 }
 
 // show message in div#messages
+var ids = 1;
 function showMessage(message,t) {
 	
 	var div = document.createElement('div');
@@ -408,6 +449,11 @@ function showMessage(message,t) {
 	var divfp = document.createElement('div');
 
 	var divf = document.createElement('div');
+
+	var ref = document.createElement('div');
+	var refa = document.createElement('a');
+	//var refspan = document.createElement('span');
+	//var refbr = document.createElement('br');
 
 	var img = document.createElement('img');
 	var img2 = document.createElement('div');
@@ -421,8 +467,28 @@ function showMessage(message,t) {
 	var path = document.createElementNS("http://www.w3.org/2000/svg",'path');
 
 	divf.textContent = message.msg;
+	divf.id = message.tag;
+
+	divf.ondblclick = function(event){
+
+		if(message.msg.length <100)
+			refmsg=message.msg;
+		else
+			refmsg=message.msg.substr(0,100)+" ...";
+		refuser=message.id;
+		refhref=message.tag;
+		refdefined=true;
+		if(refuser == user.value)
+			makeref("Vous",refmsg,refhref);
+		else
+			makeref(refuser,refmsg,refhref);
+		document.getElementById('msg').focus();
+	}	
+	
+
 
 	divfp.className="col";
+
 
 	
 	dt.textContent=message.date;
@@ -440,6 +506,36 @@ function showMessage(message,t) {
 	path.setAttribute("d","M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z")
 
 	svg.append(path);
+
+	if(message.ref){
+		
+		refa.href=message.ref.href;
+		refa.className="text-decoration-none text-white";
+		refa.innerHTML='<span class="text-dark">'+(message.ref.user==user.value?"Vous":message.ref.user)+'</span><br>'+message.ref.msg;
+		ref.append(refa);
+		divf.prepend(ref);
+
+		var tag=message.ref.href.substr(1,message.ref.href.length-1);
+
+			ref.onclick=function(event) {
+
+				//event.preventDefault();   
+				//event.stopPropagation();
+				document.getElementById(tag).className="p-2 col border rounded-3 bg-info mt-1 me-1 position-relative text-white"
+			setTimeout(()=>{
+				
+				if(message.ref.user==user.value){
+
+				document.getElementById(tag).className="p-2 col border rounded-3 bg-primary mt-1 me-1 position-relative text-white";
+				}
+				else{
+					document.getElementById(tag).className="p-2 rounded-3 border mt-1 ms-1   bg-secondary text-white position-relative";
+				}
+			},4000);
+
+			}
+ 
+  }
 	
 
 	if(t=="me"){
@@ -448,7 +544,9 @@ function showMessage(message,t) {
 		dt.className="text-muted";
 		divp.className ="d-flex ";
 		divf.className ="p-2 col border rounded-3 bg-primary mt-1 me-1 position-relative text-white";
+		ref.className ="p-1  border-start border-white  border-5 o mb-1 rounded-3 ";
 		img.src="bbb.jpeg";
+		ref.style.backgroundColor = "#6a5aeb";
 		svg.setAttribute("fill","#0d6efd")
 		
 		svg.setAttribute("class","position-absolute top-0 start-100 translate-middle mt-1 bi bi-caret-down-fill");
@@ -475,6 +573,8 @@ function showMessage(message,t) {
 		dt.className="text-muted";
 		divp.className ="d-flex ";
 		divf.className="p-2 rounded-3 border mt-1 ms-1   bg-secondary text-white position-relative";
+		ref.className="p-1  border-start border-white border-5 o mb-1 rounded-3 ";
+		ref.style.backgroundColor = "#8c8b94";
 		img.src="aaa.png";
 		svg.setAttribute("fill","#6c757d")
 		
@@ -501,27 +601,25 @@ function showMessage(message,t) {
 	}
 	
    
-   
 
-
-
-
-
-
-
-
-	/*let messageElem = document.createElement('div');
-	if(t=="me"){
-		messageElem.className="p-2 offset-2 card col-10  bg-primary text-white border border-rounded rounded";
-	}
-
-	else{
-		messageElem.className="p-2  card col-10  bg-secondary text-white border border-rounded";
-	}*/
-  
   
    document.getElementById('cp').append(div);
 }
+
+
+function makeref(user,msg,id){
+	var div = document.createElement('div');
+	div.innerHTML='<div class="p-1 me-5 border-start border-dark position-relative  border-5 ms-3 mb-1 rounded-3  " style="background-color: #6a5aeb;"><button id="refclose" class="btn btn-close position-absolute start-100 top-0 btn-sm"></button><a class="text-decoration-none text-white" ><span class="text-dark">'+user+'</span><br>'+msg+'</a></div>';
+	document.getElementById('refdiv').innerHTML="";
+	document.getElementById('refdiv').append(div);
+	
+	$("#refclose").click(()=>{
+		document.getElementById('refdiv').innerHTML="";
+		refdefined=false;
+	})
+}
+
+//makeref("Yeto","Salut lesgars");
 
 
 $("#logout").click((event)=>{

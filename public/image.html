@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Image</title>
+</head>
+<body>
+	<form method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
+
+    <input type="file" name="picture" onchange="previewPicture(this)" required >
+
+    <button type="submit" >Uploader</button>
+
+	</form>
+
+	<img src="#" alt="" id="image" style="max-width: 200px; margin-top: 20px;" >
+
+<script type="text/javascript" >
+    // L'image img#image
+    var image = document.getElementById("image");
+     
+    // La fonction previewPicture
+    var previewPicture  = function (e) {
+
+        // e.files contient un objet FileList
+        const [picture] = e.files
+
+        // Les types de fichier autorisés
+    	var types = [ "image/jpg", "image/gif","image/webp", "image/jpeg", "image/png" ];
+
+        // "picture" est un objet File
+        if (picture && types.includes(picture.type)) {
+            // On change l'URL de l'image
+            image.src = URL.createObjectURL(picture)
+        }
+        else{
+        	alert("C'est pas une image");
+        	image.src ="";
+        }
+    } 
+</script>
+<script type="text/javascript" >
+    // L'image img#image
+    /*var image = document.getElementById("image");
+     
+    // La fonction previewPicture
+    var previewPicture  = function (e) {
+
+        // e.files contient un objet FileList
+        const [picture] = e.files
+
+        // "picture" est un objet File
+        if (picture) {
+
+            // L'objet FileReader
+            var reader = new FileReader();
+
+            // L'événement déclenché lorsque la lecture est complète
+            reader.onload = function (e) {
+                // On change l'URL de l'image (base64)
+                image.src = e.target.result
+            }
+
+            // On lit le fichier "picture" uploadé
+            reader.readAsDataURL(picture)
+
+        }
+    } */
+</script>
+</body>
+</html>
