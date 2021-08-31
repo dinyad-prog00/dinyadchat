@@ -21,7 +21,11 @@ const pseudos = new Set();
 var rooms = {};
 rooms['11111111']={users :[],messages : []};
 
-//console.log(rooms);
+for (var i = 0; i <= 40; i++) {
+  rooms[id(nb)]={users :[],messages : []};
+  nb=nb+1;
+}
+
 function room(url) {
   return url.substr(3,8);
 }
@@ -167,7 +171,7 @@ function onSocketConnect(ws,id) {
   else{
     log("n f")
     rm.users.push({ws : ws, actif : true, name : id.user,last : "00:00"});
-    for (var i = msgs.length - 1; i >= 0; i--) {
+    for (var i = 0; i < msgs.length; i++) {
         ws.send(JSON.stringify(msgs[i]));
     }
   }
