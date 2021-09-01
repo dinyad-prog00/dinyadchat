@@ -197,8 +197,8 @@
 			<div class="modal-footer row " id="to">
 
 				 
-				
-					<span class="col-1" onclick="$('#emojis').toggle();">😂️</span><input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
+					<button id="emc" class="btn-close col-1 ms-3" onclick="$('#emojis').toggle(); $('#em').show(); $('#emc').hide();"></button>
+					<span class="col-1" onclick="$('#emojis').toggle(); $('#emc').show(); $('#em').hide();" id="em">😂️</span><input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
 
 			<!-- <form class="col-2" method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
 
@@ -252,6 +252,7 @@
 
 	$("#logout").hide();
 	$("#login").hide();
+	$('#emc').hide();
 /*let url = location.host == 'localhost' ?
   'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
   `ws://javascript.local/article/websocket/chat/ws` : // dev integration with local site
