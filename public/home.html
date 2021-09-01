@@ -5,13 +5,14 @@
 	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script type="text/javascript" src="jquery.min.js"></script>
+	<script src="/push.min.js"></script>
 
     
 	<title>DinyadChat</title>
 
 	
 </head>
-<body class="h-100">
+<body class="h-100" id="body">
 	<div class="h-100 d-table w-100">
 		<div class="align-middle  m-1 d-table-cell  text-center ">
 		<h2>DinyadChat</h2>
@@ -179,24 +180,33 @@
 			<div id="refdiv">
 				
 			</div>
-			<!--
-			<img class="rounded mx-auto d-block img-thumbnail" src="#" alt="" id="image" style="max-width: 200px; margin-top: 20px;" >
-		  -->
+			<!-- <img class="rounded mx-auto d-block img-thumbnail" src="#" alt="" id="image" style="max-width: 200px; margin-top: 20px;" > -->
 			
-
+		  
+			
+			<div class="border border-light rounded bg-light p-2" id="emojis">
+				<div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+            <a class="nav-link active " id="nav-home-tab" data-bs-toggle="tab" href="#smileys" role="tab" aria-controls="smileys" aria-selected="true"> 😂</a>
+            <a class="nav-link " id="nav-home-tab" data-bs-toggle="tab" href="#personnes" role="tab" aria-controls="personnes" aria-selected="false"> 👱‍♂️</a>
+            <a class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" href="#gestes" role="tab" aria-controls="gestes" aria-selected="false">👍</a>
+            <a class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#amour" role="tab" aria-controls="amour" aria-selected="false">💋</a>
+            
+            <a class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" href="#drapeaux" role="tab" aria-controls="drapeaux" aria-selected="false">🇧🇯</a>
+          </div>
+			</div> 
 			<div class="modal-footer row " id="to">
 
 				 
 				
-					<input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
+					<span class="col-1" onclick="$('#emojis').toggle();">😂️</span><input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
 
-					<!--
-					<form class="col-2" method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
+			<!-- <form class="col-2" method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
 
-    				<input type="file" name="picture" onchange="previewPicture(this)" required >
+    				<input type="file" name="picture" onchange="previewPicture(this)" required > -->
+					
 
 					</form>
-				-->
+				
 
 
 					<button class="btn-sm btn  btn-white  col-2" type="submit" id="send">
@@ -235,6 +245,8 @@
 			},5000)
 		},3000)
 	}
+
+	$("#emojis").hide();
 
 	jveux();
 
@@ -305,6 +317,25 @@ const onmessage = function(event) {
     $("#venezdentrer").hide();
 	}
 	else{
+		
+   if(incomingMessage.id!=user.value){
+   	
+
+			Push.create("Un message de "+incomingMessage.id+" sur DinyadChat", 
+			{
+        body: incomingMessage.msg, //this should print "hello"
+        icon: '/aaa.png',
+        timeout: 30000,
+         onClick: function () {
+            window.focus();
+            this.close();
+        
+        }
+      });
+     }
+	
+
+
 	  if(incomingMessage.id == autor){
 	  	encore = true;
 	  }
@@ -648,6 +679,37 @@ $("#login").click((event)=>{
 	onclose(event);
 });
 	
+function notifyMe() {
+  // Let's check if the browser supports notifications
+  if (!('Notification' in window)) {
+
+    alert('This browser does not support desktop notification')
+  }
+
+  // Let's check whether notification permissions have alredy been granted
+  else if (Notification.permission === 'granted') {
+    // If it's okay let's create a notification
+    const notification = new Notification('Premierement mme')
+  }
+
+  // Otherwise, we need to ask the user for permission
+  else if (Notification.permission == 'denied' || Notification.permission== 'default'
+  ) 
+  {
+  	
+    Notification.requestPermission((permission) => {
+      // If the user accepts, let's create a notification
+      if (permission === 'granted') {
+        const notification = new Notification('Apres acceptation!')
+      }
+    })
+  }
+
+ //alert(Notification.permission)
+  // At last, if the user has denied notifications, and you
+  // want to be respectful there is no need to bother them any more.
+}
+
 
 
 ////previsualiser image
@@ -671,7 +733,83 @@ var image = document.getElementById("image");
         	alert("C'est pas une image");
         	image.src ="";
         }
+
+
     } 
+
+
+    function addemojis(em){
+    	msg.value = msg.value+em;
+    }
+
+
+    function lesemojis(){
+
+    	var emojis={};
+    	emojis["Smileys"]="😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍 🥰 😘 😗 😙 😚 ☺️ 🙂 🤗 🤩 🤔 🤨 😐 😑 😶 🙄 😏 😣 😥 😮 🤐 😯 😪 😫 😴 😌 😛 😜 😝 🤤 😒 😓 😔 😕 🙃 🤑 😲 ☹️ 🙁 😖 🥵 😞 😟 🥶 🥴 😤 😢 😭 😦 😧 🥳 😨 😩 🤯 😬 😰 😱 😳 🤪 😵 😡 🥺 😠 🤬 😷 🤒 🤕 🤢 🤮 🤧 😇 🤠 🤥 🤫 🤭 🧐 🤓 😈 👿 🤡 👹 👺 💀 ☠️ 👻 👽👾 🤖 💩 🙊";
+
+    	emojis["Amour"]= "💋 💘 💝 💖 💗 💓 💞 💕 💌 ❣️ 💔 ❤️ 🧡 💛 💚 💙 💜 🖤 💟 💍 💎 💐 💒";
+
+    	emojis["Personnes"] = "👶 🧒 👦 👧 🧑 👨 👱‍♂️ 🧔 👩 👱‍♀️ 🧓 👴 👵 👨‍⚕️ 👩‍⚕️ 👨‍🎓 👩‍🎓 👨‍🏫 👩‍🏫 👨‍⚖️ 👩‍⚖️ 👨‍🌾 👩‍🌾 👨‍🍳 👩‍🍳 👨‍🔧 👩‍🔧 👨‍🏭 👩‍🏭 👨‍💼 👩‍💼 👨‍🔬 👩‍🔬 👨‍💻 👩‍💻 👨‍🎤 👩‍🎤 👨‍🎨 👩‍🎨 👨‍✈️ 👩‍✈️ 👨‍🚀 👩‍🚀 👨‍🚒 👩‍🚒 👮‍♂️ 👮‍♀️ 🕵️‍♂️ 🕵️‍♀️ 💂‍♂️ 💂‍♀️ 👷‍♂️ 👷‍♀️ 🤴 👸 👳‍♂️ 👳‍♀️ 👲 🧕 🤵 👰 🤰 🤱 👼 🎅 🤶 🧙‍♂️ 🧙‍♀️ 🧚‍♂️ 🧚‍♀️ 👨‍🦰 🧛‍♂️ 🧛‍♀️ 👨‍🦱 👨‍🦳 👨‍🦲 🧜‍♂️ 🧜‍♀️ 🧝‍♂️ 👩‍🦰 👩‍🦱 🧝‍♀️ 👩‍🦳 🧞‍♂️ 👩‍🦲 🧞‍♀️ 🧟‍♂️ 🧟‍♀️ 🙍 ♂️ 🙍‍♀️ 🙎‍♂️ 🙎‍♀️ 🙅‍♂️ 🙅‍♀️ 🙆‍♂️ 🙆‍♀️ 💁‍♂️ 💁‍♀️ 🙋‍♂️ 🙋‍♀️ 🙇‍♂️ 🙇‍♀️ 🤦 🤦‍♂️ 🤦‍♀️ 🤷 🤷‍♂️ 🤷‍♀️ 💆‍♂️ 💆‍♀️ 💇‍♂️ 💇‍♀️ 👤 👥 🦸‍♂️ 🦸‍♀️ 🦹‍♂️ 🦹‍♀️ 👫 👬 👭 👩‍❤️‍💋‍👨 👨‍❤️‍💋‍👨 👩‍❤️‍💋‍👩 👩‍❤️‍👨 👨‍❤️‍👨 👩‍❤️‍👩 👨‍👩‍👦 👨‍👩‍👧 👨‍👩‍👧‍👦 👨‍👩‍👦‍👦 👨‍👩‍👧‍👧 👨‍👨‍👦 👨‍👨‍👧 👨‍👨‍👧‍👦 👨‍👨‍👦‍👦 👨‍👨‍👧‍👧 👩‍👩‍👦 👩‍👩‍👧 👩‍👩‍👧‍👦 👩‍👩‍👦‍👦 👩‍👩‍👧‍👧 👨‍👦👨‍👦‍👦 👨‍👧 👨‍👧‍👦 👨‍👧‍👧 👩‍👦 👩‍👦‍👦 👩‍👧 👩‍👧‍👦👩‍👧‍👧"
+			emojis["Gestes"] ="🦵 🦶 🤳 💪 👈 👉 ☝️ 👆 🖕 👇 ✌️ 🤞 🖖 🤘 🤙 🖐️ ✋ 👌 👍 👎 ✊ 👊 🤛 🤜 🤚 👋 🤟 ✍️ 👏 👐 🙌 🤲 🙏 🤝 👂 👃 👀 👁️ 🧠 👅 👄";
+			emojis["Drapeaux"]="🏁 🚩 🎌 🏴 🏳️ 🏳️‍🌈 🇦🇨 🇦🇩 🇦🇪 🇦🇫 🇦🇬 🇦🇮 🇦🇱 🇦🇲 🇦🇴 🇦🇶 🇦🇷 🇦🇸 🇦🇹 🇦🇺 🇦🇼 🇦🇽 🇦🇿 🇧🇦 🇧🇧 🇧🇩 🇧🇪 🇧🇬 🇧🇭 🇧🇮 🇧🇯 🇧🇱 🇧🇲 🇧🇳 🇧🇴 🇧🇶 🇧🇷 🇧🇸 🇧🇹 🇧🇻 🇧🇼 🇧🇾 🇧🇿 🇨🇦 🇨🇨 🇨🇩 🇨🇫 🇨🇬 🇨🇭 🇨🇮 🇨🇰 🇨🇱 🇨🇲 🇨🇳 🇨🇴 🇨🇵 🇨🇷 🇨🇺 🇨🇻 🇨🇼 🇨🇽 🇨🇾 🇨🇿 🇩🇪 🇩🇬 🇩🇯 🇩🇰 🇩🇲 🇩🇴 🇩🇿 🇪🇦 🇪🇨 🇪🇪 🇪🇬 🇪🇭 🇪🇷 🇪🇸 🇪🇹 🇪🇺 🇫🇮 🏴‍☠️ 🇫🇯 🇫🇰 🇫🇲 🇫🇴 🇫🇷 🇬🇦 🇬🇧 🇬🇩 🇬🇪 🇬🇫 🇬🇬 🇬🇭 🇬🇮 🇬🇱 🇬🇲 🇬🇳 🇬🇵 🇬🇶 🇬🇷 🇬🇸 🇬🇹 🇬🇺 🇬🇼 🇬🇾 🇭🇰 🇭🇲 🇭🇳 🇭🇷 🇭🇹 🇭🇺 🇮🇨 🇮🇩 🇮🇪 🇮🇱 🇮🇲 🇮🇳 🇮🇴 🇮🇶 🇮🇷 🇮🇸 🇮🇹 🇯🇪 🇯🇲 🇯🇴 🇯🇵 🇰🇪 🇰🇬 🇰🇭 🇰🇮 🇰🇲 🇰🇳 🇰🇵 🇰🇷 🇰🇼 🇰🇾 🇰🇿 🇱🇦 🇱🇧 🇱🇨 🇱🇮 🇱🇰 🇱🇷 🇱🇸 🇱🇹 🇱🇺 🇱🇻 🇱🇾 🇲🇦 🇲🇨 🇲🇩 🇲🇪 🇲🇫 🇲🇬 🇲🇭 🇲🇰 🇲🇱 🇲🇲 🇲🇳 🇲🇴 🇲🇵 🇲🇶 🇲🇷 🇲🇸 🇲🇹 🇲🇺 🇲🇻 🇲🇼 🇲🇽 🇲🇾 🇲🇿 🇳🇦 🇳🇨 🇳🇪 🇳🇫 🇳🇬 🇳🇮 🇳🇱 🇳🇴 🇳🇵 🇳🇷 🇳🇺 🇳🇿 🇴🇲  🇵🇦 🇵🇪 🇵🇫 🇵🇬 🇵🇭 🇵🇰🇵🇱 🇵🇲 🇵🇳 🇵🇷 🇵🇸 🇵🇹 🇵🇼 🇵🇾 🇶🇦 🇷🇪 🇷🇴 🇷🇸 🇷🇺 🇷🇼 🇸🇦 🇸🇧 🇸🇨 🇸🇩 🇸🇪 🇸🇬 🇸🇭 🇸🇮 🇸🇯 🇸🇰 🇸🇱 🇸🇲 🇸🇳 🇸🇴 🇸🇷 🇸🇸 🇸🇹 🇸🇻 🇸🇽 🇸🇾 🇸🇿 🇹🇦 🇹🇨 🇹🇩 🇹🇫 🇹🇬 🇹🇭 🇹🇯 🇹🇰 🇹🇱 🇹🇲 🇹🇳 🇹🇴 🇹🇷 🇹🇹 🇹🇻 🇹🇼 🇹🇿 🇺🇦 🇲🇺 🇳🇺 🇨🇻 🇪🇻 🇻🇮 🇻🇳  🇻🇺 🇼🇫 🇼🇸 🇽🇰 🇾🇪 🇾🇹 🇿🇦 🇿🇲  🇿🇼󠁧󠁢󠁷󠁬󠁳󠁿";
+			emojis["Musiques et vidéos"] ="📢 📣 📯 🔔 🎼 🎵 🎶 🎙️ 🎚️ 🎛️  🎧 📻 🎷 🎸 🎹 🎺  🎻 🥁 💽 💿 📀 🎥 🎞️ 📽️  🎬 📺 📷 📸 📹 📼";
+			
+
+			emojis["Nouriture"] = "🥭 🍇 🍈 🍉 🍊 🍋 🍌  🍍 🍎 🍏 🍐 🍑 🍒 🥬 🍓 🥝 🍅 🥥 🥑 🍆 🥔 🥕 🌽 🌶️ 🥯 🥒 🥦 🥜 🌰 🍞 🥐 🥖 🥨 🥞 🧀 🍖 🍗 🥩 🥓 🍔 🍟 🍕 🌭 🥪 🌮 🌯 🥙 🥚 🧂 🍳 🥘 🍲 🥣 🥗🍿 🥫 🍱 🍘 🍙 🍚 🍛 🍜 🥮 🍝 🍠 🍢 🍣 🍤 🍥 🍡 🥟 🥠 🥡 🍦 🍧 🍨 🍩 🍪 🧁 🎂 🍰 🥧 🍫 🍬 🍭 🍮 🍯 🍼 🥛 ☕ 🍵 🍶 🍾 🍷 🍸 🍹 🍺 🍻 🥂 🥃 🥤 🥢 🍽️ 🍴 🥄 🏺";
+      emojis["Animaux"] = "😺 😸 😹 😻 😼 😽 🙀 😿 😾 🙈 🙉  🦝 🐵 🐒 🦍 🐶 🐕 🐩 🐺 🦊 🐱 🐈 🦁 🐯 🐅 🐆 🐴 🐎 🦄 🦓 🦌 🐮 🦙 🐂 🐃 🐄 🐷 🦛 🐖 🐗 🐽 🐏 🐑 🐐 🐪 🐫 🦒 🐘 🦏 🐭 🐁 🐀 🦘 🐹 🦡 🐰 🐇 🐿️ 🦔 🦇 🐻 🐨 🐼 🐾 🦃 🐔 🦢 🐓 🐣 🐤 🦚 🐥 🐦 🦜 🐧 🕊️ 🦅 🦆 🦉 🐸 🐊 🐢 🦎 🐍 🐲 🐉 🦕 🦖 🐳 🐋 🐬 🐟 🐠 🐡 🦈 🐙 🐚 🦀 🦟 🦐 🦑 🦠 🐌 🦋 🐛 🐜 🐝 🐞 🦗 🕷️ 🕸️ 🦂 🦞";
+     emojis["Nature"] ="🌸 💮 🏵️ 🌹 🥀 🌺  🌻 🌼 🌷 🌱 🌲 🌳 🌴 🌵 🌾 🌿 ☘️ 🍀 🍁 🍂 🍃 🍄";
+     emojis["Pitogrammes"] ="⌛⏳⚡🎆🎇🔇🔈🔉🔊🔕🔒🔓🔏🔐🚮🚰♿🚹🚺🚻🚼🚾🛂🛃🛄🛅⚠️🚸⛔🚫🚳🚭🚯🚱🚷📵🔞⏭️⏯️⏮️⏸️⏹️⏺️⏏️🎦🔅🔆📶📳📴🔱ℹ️Ⓜ️🅿️";
+     emojis["Flèches"] ="🧭⬆️↗️➡️↘️⬇️↙️⬅️↖️↕️↔️↩️↪️⤴️⤵️🔃🔄🔀🔁🔂▶️⏩◀️⏪🔼⏫🔽⏬";
+     emojis["Objets"]="🦷🦴🛀👣💣🔪🧱🛢️⛽🛹🚥🚦🚧🛎️🧳⛱️🔥🧨🎗️🎟️🎫🧧🔮🎲🎴🎭🖼️🎨🎤🔍🔎🕯️💡🔦🏮📜🧮🔑🗝️🔨⛏️⚒️🛠️🗡️⚔️🔫🏹🛡️🔧🔩⚙️🗜️⚖️⛓️⚗️🔬🔭📡💉💊🚪🛏️🛋️🚽🚿🛁🛒🚬⚰️⚱️🧰🧲🧪🧴🧷🧹🧻🧼🧽🧯💠♟️";
+     emojis["Ordinateur et bureau"]="💺🎮🕹️🎰📱📲☎️📞📟📠💻🖥️🖨️⌨️🖱️🖲️💾📔📕📖📗📘📙📚📓📒📃📄📰🗞️📑🔖🏷️💰💴💵💶💷💸💳💹💱✉️📧📨📩📤📥📦📫📪📬📭📮🗳️✏️✒️🖋️🖊️🖌️🖍️📝💼📁📂🗂️📅📆🗒️🗓️📇📈📉📊📋📌📍📎🖇️📏📐✂️🗃️🗄️🗑️🧾";
+      emojis["Vêtements"] ="💅👓🕶️👔👕👖🧣🧤🧥🧦👗👘👙👚👛👜👝🛍️🎒👞👟👠👡👢👑👒🎩🎓🧢⛑️📿💄🌂☂️🎽🥽🥼🥾🥿🧺";
+      emojis["Véhicules"]="🚂🚃🚄🚅🚆🚇🚈🚉🚊🚝🚞🚋🚌🚍🚎🚐🚑🚒🚓🚔🚕🚖🚗🚘🚙🚚🚛🚜🚲🛴🛵🚏🛣️🛤️⛵🛶🚤🛳️⛴️🛥️🚢✈️🛩️🛫🛬🚁🚟🚠🚡🛰️🚀🛸";
+      emojis["Lieux"] = "🌍🌎🌏🌐🗺️🗾🏔️⛰️🗻🏕️🏖️🏜️🏝️🏞️🏟️🏛️🏗️🏘️🏚️🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰🗼🗽⛪🕌🕍⛩️🕋⛲⛺🏙️🎠🎡🎢🎪⛳🗿"
+     emojis["Metéo"]="💦🌋🌁🌃🌄🌅🌆🌇🌉🌌🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜🌡️☀️🌝🌞🌟🌠☁️⛅⛈️🌤️🌥️🌦️🌧️🌨️🌩️🌪️🌫️🌬️🌀🌈☔❄️☃️⛄☄️💧🌊🎑";
+     emojis["Horloges"]="⌚⏰⏱️⏲️🕰️🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕡🕖🕢🕗🕣🕘🕤🕙🕥🕚🕦";
+     emojis["Textes"] ="🏧🔙🔚🔛🔜🔝🔰‼️⁉️❓❔❕❗™️#️⃣*️⃣0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟💯🔠🔡🔢🔣🔤🅰️🆎🅱️🆑🆒🆓🆔🆕🆖🅾️🆗🆘🆙🆚🈁🈂️🈷️🈶🈯🉐🈹🈚🈲🉑🈸🈴🈳㊗️㊙️🈺🈵🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿";
+   emojis["Symboles"]="💢♨️💈⚓♠️♥️♦️♣️💲☢️☣️🛐⚛️🕉️✡️☸️☯️✝️☦️☪️☮️🕎🔯♈♉♊♋♌♍♎♏♐♑♒♓⛎♀️♂️⚕️♻️⚜️©️®️♾️";
+  var divers="👁️‍🗨️💤💥💨💫💬🗨️🗯️💭🕳️🚨🛑⭐🎃🎄✨🎈🎉🎊🎋🎍🎎🎏🎐🎀🎁🃏🀄🔋🔌🔗🧫🧬📛⭕✅☑️✔️✖️❌❎➕➖➗➰➿〽️✳️✴️❇️〰️🔴🔵⚪⚫⬜⬛◼️◻️◽◾▫️▪️🔶🔷🔸🔹🔺🔻🔘🔲🔳🏻🏼🏽🏾🏿";
+   
+
+   var titres=["Smileys","Personnes","Gestes","Amour","Drapeaux","Personnes","Musiques et vidéos","Nouriture","Animaux","Nature","Pitogrammes","Flèches","Objets","Ordinateur et bureau","Vêtements","Véhicules","Lieux","Metéo","Horloges","Textes","Symboles"];
+   var hrefemo=["smileys","personnes","gestes","amour","drapeaux","Musiques et vidéos","Nouriture","Animaux","Nature","Pitogrammes","Flèches","Objets","Ordinateur et bureau","Vêtements","Véhicules","Lieux","Metéo","Horloges","Textes","Symboles"];
+
+   var div = document.createElement('div');
+   div.className="tab-content";
+   for (var i = 0; i< titres.length ; i++) {
+
+
+   	var divf = document.createElement('div');
+   	divf.id=hrefemo[i];
+
+   	if(i==0){
+   		divf.className="tab-pane fade show overflow-scroll active";
+   		divf.style.maxHeight="100px";
+   	}
+   	else{
+   		divf.className="tab-pane overflow-scroll fade";
+   		divf.style.maxHeight="100px";
+   	}
+
+   	list = emojis[titres[i]].split(" ");
+   	for (var j = 0; j< list.length ; j++) {
+   		//alert(emojis[titres[i]][j]):
+   		divf.innerHTML=divf.innerHTML+'<span class="p-2" onclick="addemojis('+"'"+list[j]+"'"+');"'+">"+list[j]+"</span>";
+   		//alert('<span class="p-1" onclick="addemojis('+"'"+list[j]+"'"+');"'+">"+list+"</span>");
+    }
+
+    	div.append(divf);
+    	//alert(div.innerHTML);
+    	
+    	
+   } 
+   return div;
+
+}
+
+document.getElementById('emojis').append(lesemojis());
 </script>
 
 <script type="text/javascript" src="bootstrap.bundle.min.js"></script>

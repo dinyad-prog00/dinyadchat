@@ -50,13 +50,56 @@ var p = document.getElementById("p");
 
 $("#sh").hide();
 
+function notifyMe() {
+  // Let's check if the browser supports notifications
+  if (!('Notification' in window)) {
 
+    alert('This browser does not support desktop notification')
+  }
+
+  // Let's check whether notification permissions have alredy been granted
+  else if (Notification.permission === 'granted') {
+    // If it's okay let's create a notification
+    const notification = new Notification('Premierement mme')
+  }
+
+  // Otherwise, we need to ask the user for permission
+  else if (Notification.permission == 'denied' || Notification.permission== 'default'
+  ) 
+  {
+  	
+    Notification.requestPermission((permission) => {
+      // If the user accepts, let's create a notification
+      if (permission === 'granted') {
+        const notification = new Notification('Apres acceptation!')
+      }
+    })
+  }
+
+ alert(Notification.permission)
+  // At last, if the user has denied notifications, and you
+  // want to be respectful there is no need to bother them any more.
+}
 
 //entrer.href=location.origin+"/newroom";
 let socket=null;
 let url =location.origin.replace(/^http/, 'ws')+"/newroom";
 entrer.onclick=function() {
+	 /*Notification.requestPermission().then( function( permission )
+        {
+            if ( permission != "granted" )
+            {
+                alert( "Notification failed!" );
+                return;
+            }
 
+            navigator.serviceWorker.ready.then( function( registration )
+            {
+                registration.showNotification( "Hello world", { body:"Here is the body!" } );
+            } );
+
+        } );*/
+    
 	
 	
 	socket = new WebSocket(url);

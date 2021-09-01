@@ -9,6 +9,7 @@ Then:
 const http = require('http');
 const fs = require('fs');
 const ws = new require('ws');
+var push = require("push.js");
 //const  db = require("db");
 var nb = 0;
 
@@ -120,6 +121,9 @@ function accept(req, res) {
 
   else if (req.url == '/jquery.min.js') { // index.html
     fs.createReadStream('public/jquery.min.js').pipe(res);
+  }
+  else if (req.url == '/push.min.js') { // index.html
+    fs.createReadStream('node_modules/push.js/bin/push.min.js').pipe(res);
   } 
 
   else { // page not found
@@ -188,6 +192,8 @@ function onSocketConnect(ws,id) {
   ws.on('message', function(message) {
     var r= JSON.parse(message);
 
+
+
     if(r.url == "/register"){
      // db.create(r.data);
     }
@@ -196,6 +202,9 @@ function onSocketConnect(ws,id) {
        data = r.data;
        data.tag = tag+"";
        tag=tag+1;
+
+
+       
         log(`message received: ${data.msg} ${data.room}`);
 
     //message = message.slice(0, 50); // max message length will be 50

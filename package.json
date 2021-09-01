@@ -6,6 +6,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "pg": "^8.7.1",
+    "push.js": "^1.0.12",
     "ws": "^8.2.1"
   },
   "devDependencies": {},
