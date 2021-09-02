@@ -180,6 +180,10 @@
 			<div id="refdiv">
 				
 			</div>
+			<span class=" col-10 offset-2 text-danger p" id="arenvoyerinfo">A renvoyer après connexion</span>
+			<div id="arenvoyer" style="max-height: 150px;" class="overflow-scroll bg-light m-1">	
+				
+			</div>
 			<!-- <img class="rounded mx-auto d-block img-thumbnail" src="#" alt="" id="image" style="max-width: 200px; margin-top: 20px;" > -->
 			
 		  
@@ -202,10 +206,10 @@
 
 			<!-- <form class="col-2" method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
 
-    				<input type="file" name="picture" onchange="previewPicture(this)" required > -->
+    				<input type="file" name="picture" onchange="previewPicture(this)" required > 
 					
 
-					</form>
+					</form>-->
 				
 
 
@@ -265,6 +269,7 @@ let url = location.origin.replace(/^http/, 'ws')+location.pathname;
 //let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://dinyadchat.herokuapp.com:8080/ws";
 let socket = new WebSocket(url);
 
+let arenvoyermsg=[];
 
 var recnt=true;
 function froom(url) {
@@ -279,7 +284,8 @@ function fuser(url) {
 var salle = document.getElementById("salle");
 
 salle.textContent="Salle #"+froom(location.pathname);
-
+$("#arenvoyer").hide();
+$("#arenvoyerinfo").hide();
 const onopen= function(event) {
 	// body...
 	yp.textContent="Connecté(e), "+user.value;
@@ -287,6 +293,15 @@ const onopen= function(event) {
 	$("#spinner").hide();
 	$("#login").hide();
 	$("#logout").show();
+
+	for (var i = 0 ; i< arenvoyermsg.length ; i++) {
+		const data = JSON.stringify(arenvoyermsg[i]);
+   socket.send(data);
+   document.getElementById('arenvoyer').innerHTML="";
+   $("#arenvoyer").hide();
+   $("#arenvoyerinfo").hide();
+   arenvoyermsg=[];
+	}
 
 }
 
@@ -434,27 +449,39 @@ btn.onclick = function() {
 	var min = dat.getMinutes();
 
 	if(msg.value!=""){
-  let outgoingMessage = msg.value;
-  var tosend = {
-  	url : "/chat" ,
-  	data : {
-  		id: user.value,
-  		msg : outgoingMessage,
-  		date : deux(h+"")+":"+deux(min+""),
-  		room : froom(location.pathname)
-  		}
-  };
+				let outgoingMessage = msg.value;
+		  var tosend = {
+		  	url : "/chat" ,
+		  	data : {
+		  		id: user.value,
+		  		msg : outgoingMessage,
+		  		date : deux(h+"")+":"+deux(min+""),
+		  		room : froom(location.pathname)
+		  		}
+		  };
 
-  if(refdefined){
-  	tosend.data.ref={msg : refmsg, user : refuser, href : "#"+refhref };
-  	refdefined=false;
-  	document.getElementById('refdiv').innerHTML="";
-  }
+		  if(refdefined){
+		  	tosend.data.ref={msg : refmsg, user : refuser, href : "#"+refhref };
+		  	refdefined=false;
+		  	document.getElementById('refdiv').innerHTML="";
+		  }
+
+	if(socket.readyState == 1){
+  
 
   const data = JSON.stringify(tosend);
   socket.send(data);
   msg.value="";
+}//fin if ws
+else{
+	showMessage2(tosend.data,"me");
+	arenvoyermsg.push(tosend);
+	msg.value="";
+	$("#arenvoyer").show();
+	 $("#arenvoyerinfo").show();
 }
+ 
+ } 
   return false;
 };
 var h = 1000;
@@ -651,6 +678,123 @@ function showMessage(message,t) {
    document.getElementById('cp').append(div);
 }
 
+function showMessage2(message,t) {
+	
+	var div = document.createElement('div');
+
+	var divp = document.createElement('div');
+
+	var divfp = document.createElement('div');
+
+	var divf = document.createElement('div');
+
+	var ref = document.createElement('div');
+	var refa = document.createElement('a');
+	//var refspan = document.createElement('span');
+	//var refbr = document.createElement('br');
+
+	var img = document.createElement('img');
+	var img2 = document.createElement('div');
+
+	var aut = document.createElement('span');
+	var dt = document.createElement('span');
+
+
+
+	var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
+	var path = document.createElementNS("http://www.w3.org/2000/svg",'path');
+
+	divf.textContent = message.msg;
+	divf.id = message.tag;
+
+	
+	
+
+
+	divfp.className="col";
+
+
+	
+	dt.textContent=message.date;
+	img.className="img-thumbnail col-1 align-self-start rounded-circle  m-1";
+	img2.className="col-1 m-1";
+	img.alt="CM";
+	img.width="20%";
+
+	
+
+	
+	svg.setAttribute("width","1em");
+	svg.setAttribute("height","1em");
+	svg.setAttribute("viewBox","0 0 16 16");
+
+	path.setAttribute("d","M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z")
+
+	svg.append(path);
+
+	if(message.ref){
+		
+		refa.href=message.ref.href;
+		refa.className="text-decoration-none text-white";
+		refa.innerHTML='<span class="text-dark">'+(message.ref.user==user.value?"Vous":message.ref.user)+'</span><br>'+message.ref.msg;
+		ref.append(refa);
+		divf.prepend(ref);
+
+		var tag=message.ref.href.substr(1,message.ref.href.length-1);
+
+			ref.onclick=function(event) {
+
+				//event.preventDefault();   
+				//event.stopPropagation();
+				document.getElementById(tag).className="p-2 col border rounded-3 bg-info mt-1 me-1 position-relative text-white"
+			setTimeout(()=>{
+				
+				if(message.ref.user==user.value){
+
+				document.getElementById(tag).className="p-2 col border rounded-3 bg-primary mt-1 me-1 position-relative text-white";
+				}
+				else{
+					document.getElementById(tag).className="p-2 rounded-3 border mt-1 ms-1   bg-secondary text-white position-relative";
+				}
+			},4000);
+
+			}
+ 
+  }
+	
+
+	if(t=="me"){
+		
+		div.className="mt-1 col-10 offset-2";
+		dt.className="text-muted";
+		divp.className ="d-flex ";
+		divf.className ="p-2 col border border-danger border-2 rounded-3 bg-primary mt-1 me-1 position-relative text-white text-break";
+		ref.className ="p-1  border-start border-white  border-5 o mb-1 rounded-3 ";
+		img.src="bbb.jpeg";
+		ref.style.backgroundColor = "#6a5aeb";
+		svg.setAttribute("fill","#0d6efd")
+		
+		svg.setAttribute("class","position-absolute top-0 start-100 translate-middle mt-1 bi bi-caret-down-fill");
+		
+		
+		divp.append(divf);
+		if(!encore){
+			divp.append(img);
+		}
+		else{
+			divp.append(img2);
+		}
+
+		div.append(divp);
+		div.append(dt);
+	}
+		
+   
+
+  
+   document.getElementById('arenvoyer').append(div);
+}
+
 
 function makeref(user,msg,id){
 	var div = document.createElement('div');
@@ -811,6 +955,8 @@ var image = document.getElementById("image");
 }
 
 document.getElementById('emojis').append(lesemojis());
+
+
 </script>
 
 <script type="text/javascript" src="bootstrap.bundle.min.js"></script>

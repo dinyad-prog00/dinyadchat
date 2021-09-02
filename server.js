@@ -172,7 +172,9 @@ function onSocketConnect(ws,id) {
   if(u){
     u.ws=ws;
     u.actif=true;
+    
     for (var i = 0; i < msgs.length; i++) {
+      log(msgs[i].tag+" "+u.lid);
       if(msgs[i].tag > u.lid)
         ws.send(JSON.stringify(msgs[i]));
     }
@@ -259,7 +261,7 @@ function onSocketConnect(ws,id) {
     u.ws=0;
     u.actif=false;
     u.lid=rm.lid;
-    log(u.last);
+    log("on c "+u.lid);
     
   });
 
