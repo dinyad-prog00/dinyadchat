@@ -24,8 +24,8 @@ const pseudos = new Set();
 var rooms = {};
 rooms['11111111']={users :[],messages : []};
 
-for (var i = 0; i <= 70; i++) {
-  rooms[id(nb+"")]={users :[],messages : []};
+for (var i = 0; i <= 80; i++) {
+  rooms[id(nb+"")]={users :[],messages : [],lid : -1};
   nb=nb+1;
 }
 
@@ -167,16 +167,20 @@ function onSocketConnect(ws,id) {
   u=findUser(id);
   msgs=rm.messages;
 
+
+
   if(u){
     u.ws=ws;
     u.actif=true;
-    
-
+    for (var i = 0; i < msgs.length; i++) {
+      if(msgs[i].tag > u.lid)
+        ws.send(JSON.stringify(msgs[i]));
+    }
     
   }
   else{
     log("n f")
-    rm.users.push({ws : ws, actif : true, name : id.user,last : "00:00"});
+    rm.users.push({ws : ws, actif : true, name : id.user,last : -1});
     for (var i = 0; i < msgs.length; i++) {
         ws.send(JSON.stringify(msgs[i]));
     }
@@ -204,6 +208,7 @@ function onSocketConnect(ws,id) {
        tag=tag+1;
 
 
+
        
         log(`message received: ${data.msg} ${data.room}`);
 
@@ -211,12 +216,14 @@ function onSocketConnect(ws,id) {
 
       rm = rooms[data.room];
       if(rm){
+
         for (var i = rm.users.length - 1; i >= 0; i--) {
           if(rm.users[i].actif)
             rm.users[i].ws.send(JSON.stringify(data));
         }
 
         rm.messages.push(data);
+        rm.lid=data.tag ;
       }
       /*
       for(let client of clients) {
@@ -248,12 +255,10 @@ function onSocketConnect(ws,id) {
         if(rm.users[i].actif)
             rm.users[i].ws.send(JSON.stringify({url : "/quit", name : id.user}));
    }
-    var dat = new Date();
-    var h = dat.getHours();
-    var min = dat.getMinutes();
+    
     u.ws=0;
     u.actif=false;
-    u.last=deux(h+"")+":"+deux(min+"");
+    u.lid=rm.lid;
     log(u.last);
     
   });
@@ -289,3 +294,5 @@ if (!module.parent) {
   // log = console.log;
   exports.accept = accept;
 }
+
+
