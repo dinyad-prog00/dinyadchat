@@ -109,6 +109,7 @@ function get(room) {
 			  }
 
 			  if(firt){
+			  	changebg('');
 			  	const deft = document.getElementById("deft");
 			  	deft.remove();
 			  	firt=false;
