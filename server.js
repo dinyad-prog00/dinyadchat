@@ -173,7 +173,7 @@ function accept(req, res) {
   } 
 
   else if(req.url == "/pg"){
-    client.query('inser into salles (key,value ) values ("salles","{}");', (err, res) => {
+    client.query('insert into salles (key,value ) values ("salles","{}");', (err, res) => {
   if (err) throw err;
   /*for (let row of res.rows) {
     console.log(JSON.stringify(row));
