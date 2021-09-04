@@ -21,7 +21,6 @@ const wss = new ws.Server({noServer: true});
 //-------------------------
 const { Client } = require('pg');
 
-console.log(process.env.DATABASE_URL)
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -29,15 +28,7 @@ const client = new Client({
   }
 });
 
-client.connect();
 
-client.query('inser into salles (key,value ) values ("salles","{}");', (err, res) => {
-  if (err) throw err;
-  /*for (let row of res.rows) {
-    console.log(JSON.stringify(row));
-  }*/
-  client.end();
-});
 
 const clients = new Set();
 const pseudos = new Set();
@@ -173,12 +164,13 @@ function accept(req, res) {
   } 
 
   else if(req.url == "/pg"){
-    client.query('insert into salles (key,value ) values ("salles","{}");', (err, res) => {
+    client.connect();
+
+client.query('select * from salles;', (err, res) => {
   if (err) throw err;
-  /*for (let row of res.rows) {
+  for (let row of res.rows) {
     console.log(JSON.stringify(row));
-  }*/
-  return {"h":"heolo"};
+  }
   client.end();
 });
   }
