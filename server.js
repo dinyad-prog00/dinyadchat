@@ -47,6 +47,7 @@ function user(url) {
 }
 //var s="/dy12345678";
 //console.log(s.indexOf("/ey"));
+var regex = /^\/req(get|post|put|delete)([a-z]+) $/;
 
 
 function accept(req, res) {
@@ -73,6 +74,19 @@ function accept(req, res) {
       
       wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onSocketConnect2);
   } 
+
+  //les requetes
+  
+  else if (req.url=="/reqgetclasses" && req.headers.upgrade &&
+      req.headers.upgrade.toLowerCase() == 'websocket' &&
+      // can be Connection: keep-alive, Upgrade
+      req.headers.connection.match(/\bupgrade\b/i)) {
+      log(req.url+" "+RegExp.$1+" dd "+RegExp.$2);
+      wss.handleUpgrade(req, req.socket, Buffer.alloc(0), (ws)=>{
+        onSocketConnectReq(ws, RegExp.$1, RegExp.$2 );
+      });
+  } 
+
   else if (req.url == '/register') { // index.html
     fs.createReadStream('public/register.html').pipe(res);
   }
@@ -96,9 +110,6 @@ function accept(req, res) {
     fs.createReadStream('public/newroom.html').pipe(res);
   }
 
-
-   
-
   else if (req.url == '/bootstrap.min.css') { // index.html
     fs.createReadStream('public/bootstrap.min.css').pipe(res);
   } 
@@ -107,12 +118,25 @@ function accept(req, res) {
     fs.createReadStream('public/bootstrap.bundle.min.js').pipe(res);
   }
 
+  else if (req.url == '/bib.js') { // index.html
+    fs.createReadStream('public/bib.js').pipe(res);
+  }
+
+  else if (req.url == '/localdb.js') { // index.html
+    fs.createReadStream('public/localdb.js').pipe(res);
+  }
+
   else if (req.url == '/aaa.png') { // index.html
     fs.createReadStream('public/img/aaa.png').pipe(res);
   } 
 
   else if (req.url == '/bbb.jpeg') { // index.html
     fs.createReadStream('public/img/bbb.jpeg').pipe(res);
+  } 
+
+  else if (req.url.indexOf("/bg")==0) { // index.html
+    ur="public/img"+req.url;
+    fs.createReadStream(ur).pipe(res);
   } 
 
   else if (req.url == '/disc.webp') { // index.html
@@ -175,8 +199,10 @@ function onSocketConnect(ws,id) {
     
     for (var i = 0; i < msgs.length; i++) {
       log(msgs[i].tag+" "+u.lid);
-      if(msgs[i].tag > u.lid)
+      if(msgs[i].tag > u.lid){
         ws.send(JSON.stringify(msgs[i]));
+        log("sd")
+      }
     }
     
   }
@@ -281,6 +307,17 @@ function onSocketConnect2(ws) {
   lien="/dy"+iidd;
   ws.send(lien);
   log(rooms);
+
+
+ 
+}
+
+function onSocketConnectReq(ws,mtd,url) {
+  
+  
+  
+  ws.send(JSON.stringify({status : "ok" , data : url}));
+  
 
 
  

@@ -5,7 +5,23 @@
 	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="bib.js"></script>
+	<script type="text/javascript" src="localdb.js"></script>
 	<script src="/push.min.js"></script>
+	<style type="text/css">
+		.loader {
+position : fixed;
+z-index: 9999;
+background : url('aaa.png') 50% 50% no-repeat;
+top : 0px;
+left : 0px;
+height : 100%;
+width : 100%;
+cursor : wait;
+}
+
+
+	</style>
 
     
 	<title>DinyadChat</title>
@@ -66,8 +82,8 @@
 
 <div class="modal" id="mym" aria-hidden="true">
 	<div class=" modal-dialog modal-fullscreen-sm-down  modal-dialog-scrollable">
-		<div class="modal-content" id="content">
-			<div class="modal-header bg-info bg-gradient text-white" >
+		<div class="modal-content " id="content">
+			<div class="modal-header bg-dark bg-gradient text-white" >
 				<div class="d-flex">
 					<img src="aaa.png" class="img-thumbnail rounded-circle align-self-center m-1" alt="..." width="20%">
 					<div class="m-1">
@@ -104,7 +120,7 @@
 		
 
 	
-			<div class="modal-body collapse show" id="cp">
+			<div class="modal-body  collapse show" id="cp">
 
 				<div class="text-center" id="deft">
 					<div class="m-2 p-2 pb-0 mb-0"><h4>Discuter instantanément avec vos amis à l'aide de DinyadChat</h4></div>
@@ -202,7 +218,9 @@
 
 				 
 					<button id="emc" class="btn-close col-1 ms-3" onclick="$('#emojis').toggle(); $('#em').show(); $('#emc').hide();"></button>
-					<span class="col-1" onclick="$('#emojis').toggle(); $('#emc').show(); $('#em').hide();" id="em">😂️</span><input type="text" name="msg" id="msg" class="form-control col ms-3" placeholder="Votre message"> 
+					<span class="col-1" onclick="$('#emojis').toggle(); $('#emc').show(); $('#em').hide();" id="em">😂️</span>
+
+					<input type="text" name="msg" id="msg" class="form-control col ms-3 rounded-3" placeholder="Votre message"> 
 
 			<!-- <form class="col-2" method="post" url="/upload-picture" enctype="multipart/form-data" accept=".jpg, .png, .gif, .jpeg, .webp">
 
@@ -213,7 +231,7 @@
 				
 
 
-					<button class="btn-sm btn  btn-white  col-2" type="submit" id="send">
+					<button class="btn-sm btn btn-white  col-2" type="submit" id="send">
 							<svg xmlns="http://www.w3.org/2000/svg" width="45" height="25" fill="#45d055" class="bi bi-symmetry-horizontal" viewBox="0 0 16 16">
 	  						<path d="M13.5 7a.5.5 0 0 0 .24-.939l-11-6A.5.5 0 0 0 2 .5v6a.5.5 0 0 0 .5.5h11zm.485 2.376a.5.5 0 0 1-.246.563l-11 6A.5.5 0 0 1 2 15.5v-6a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .485.376zM11.539 10H3v4.658L11.54 10z"/>
 						</svg>
@@ -231,14 +249,52 @@
 	
 </div>
 
-<div class="col-6 offset-3 col-md-4 offset-md-4 mt-4" id="creer">
-	<a id="lcreer" href="vv" class=" text-white"><button class="btn btn-primary  form-control">
-	Créer
-</button></a>
-</div>
+
+
+ 
+ <div class="loa2der">
+ 	
+ </div>
+
 
 
 <script>
+
+	function changebg(img){
+		document.getElementById("cp").style.background="url('bg7.jpeg') 100% 100% repeat";
+	}
+
+	changebg('');
+//$(".loader").hide();
+//$(window).load(function() {
+//$(".loader").fadeOut("1000"); })
+
+
+	//test
+	/*window.onload = ()=>{
+		if(localStorage.getItem('name','anicet'))
+			alert(localStorage.getItem('name','anicet'));
+		else
+			alert("non");
+		
+	}
+
+	window.onclose = ()=>{
+		localStorage.setItem('name','anicet');
+		
+	}*/
+	
+
+	  function reqq() {
+	dyc.request(location.origin,{methode: "get", url:"/classes"}).onmessage((reponse)=>{
+	 		if(reponse.status=="ok"){
+	 			alert(reponse.value);
+	 		}
+	 		else{
+	 			alert("error");
+	 		}
+	})
+	}
 
 	function jveux() {
 		$("#veux").hide();
@@ -269,12 +325,11 @@ let url = location.origin.replace(/^http/, 'ws')+location.pathname;
 //let url = location.host == 'localhost'?'ws://localhost:8080/ws':"ws://dinyadchat.herokuapp.com:8080/ws";
 let socket = new WebSocket(url);
 
-let arenvoyermsg=[];
+//let msgtosend=[];
 
 var recnt=true;
-function froom(url) {
-  return url.substr(3,8);
-}
+
+
 
 function fuser(url) {
   return url.substr(19,url.length);
@@ -287,37 +342,40 @@ salle.textContent="Salle #"+froom(location.pathname);
 $("#arenvoyer").hide();
 $("#arenvoyerinfo").hide();
 const onopen= function(event) {
-	// body...
+	// body... 
 	yp.textContent="Connecté(e), "+user.value;
 	yp.className="text-success";
 	$("#spinner").hide();
 	$("#login").hide();
 	$("#logout").show();
+	
 
-	for (var i = 0 ; i< arenvoyermsg.length ; i++) {
-		const data = JSON.stringify(arenvoyermsg[i]);
+	for (var i = 0 ; i< msgtosend.length ; i++) {
+		
+		const data = JSON.stringify(msgtosend[i]);
    socket.send(data);
    document.getElementById('arenvoyer').innerHTML="";
    $("#arenvoyer").hide();
    $("#arenvoyerinfo").hide();
    
 	}
-	arenvoyermsg=[];
+	msgtosend=[];
 
 }
 
 
-var lcreer = document.getElementById("lcreer");
-var jlcreer = document.getElementById("jlcreer");
-var creer= document.getElementById("creer");
 
-lcreer.href=location.origin;
+var jlcreer = document.getElementById("jlcreer");
+
+
+
 jlcreer.href=location.origin;
 //alert(lcreer.href);
 
 //Onmessage
 const onmessage = function(event) {
 	let incomingMessage = JSON.parse(event.data);
+	messages.push(incomingMessage);
 	//alert(incomingMessage.url);
 	if(incomingMessage.url=="/newuser"){
      printuser(incomingMessage.name);
@@ -394,7 +452,8 @@ var onclose = function(event) {
   yp.className="text-white";
   $("#spinner").show();
 	
-
+	//alert(messages.length)
+  save(froom(location.pathname), messages,msgtosend);
 	
   socket = new WebSocket(url);
 	socket.addEventListener("open",onopen);
@@ -418,9 +477,9 @@ socket.addEventListener("close",onclose);
 
 
 
-let encore = false;
-let firt =true;
-let autor = "123456789@$#123456789";
+//let encore = false;
+//let firt =true;
+//let autor = "123456789@$#123456789";
 
 // send message from the form
 var btn = document.getElementById("send");
@@ -476,7 +535,7 @@ btn.onclick = function() {
 }//fin if ws
 else{
 	showMessage2(tosend.data,"me");
-	arenvoyermsg.push(tosend);
+	msgtosend.push(tosend);
 	msg.value="";
 	$("#arenvoyer").show();
 	 $("#arenvoyerinfo").show();
@@ -499,14 +558,14 @@ function scroller(){
 
 function printuser(n) {
 	var div =  document.createElement('div');
-	div.className="card border border-secondary text-center col-10 offset-1 rounded-3 bg-light text-break text-muted  p-1 mt-2";
+	div.className="card border border-warning text-center col-10 offset-1 rounded-3 bg-transparent opacity-100 text-break  p-1 mt-2";
 	div.textContent=n+" vient d'entrer dans le chat";
 	document.getElementById('cp').append(div);
 }
 
 function printquit(n) {
 	var div =  document.createElement('div');
-	div.className="card border text-break border-warning text-center col-10 offset-1 rounded-3 bg-light text-muted  p-1 mt-2";
+	div.className="card border text-break border-secondary  text-center col-10 offset-1 rounded-3  opacity-25 bg-transparent  p-1 mt-2";
 	div.textContent=n+" vient de quitter le chat";
 	document.getElementById('cp').append(div);
 }
@@ -536,10 +595,29 @@ function showMessage(message,t) {
 
 
 
+
 	var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
 	var path = document.createElementNS("http://www.w3.org/2000/svg",'path');
 
-	divf.textContent = message.msg;
+
+	var regex=/( [a-z]+)\.([a-z]+)\.(com|fr|org|site)/g;
+	var regex2=/( [a-z]+)\.(com|fr|org|site)/g;
+
+	if(regex.test(message.msg)){
+		dylien=RegExp.$1+'.'+RegExp.$2+'.'+RegExp.$3;
+		dyurl = '<a class="text-info text-decoration-none" href="https://'+dylien+'">'+dylien+'</a>';
+		//alert(message.msg.replace(dylien,dyurl))
+		divf.innerHTML = message.msg.replace(regex,dyurl);
+	}
+
+	else if(regex2.test(message.msg)){
+		dylien=RegExp.$1+'.'+RegExp.$2;
+		dyurl = '<a class="text-info text-decoration-none" href="https://'+dylien+'">'+dylien+'</a>';
+		//alert(message.msg.replace(dylien,dyurl))
+		divf.innerHTML = message.msg.replace(regex2,dyurl);
+	}
+	else
+	 divf.textContent = message.msg;
 	divf.id = message.tag;
 
 	divf.ondblclick = function(event){
@@ -583,8 +661,8 @@ function showMessage(message,t) {
 	if(message.ref){
 		
 		refa.href=message.ref.href;
-		refa.className="text-decoration-none text-white";
-		refa.innerHTML='<span class="text-dark">'+(message.ref.user==user.value?"Vous":message.ref.user)+'</span><br>'+message.ref.msg;
+		refa.className="text-decoration-none text-muted";
+		refa.innerHTML='<span class="text-dark fw-bold">'+(message.ref.user==user.value?"Vous":message.ref.user)+'</span><br>'+message.ref.msg;
 		ref.append(refa);
 		divf.prepend(ref);
 
@@ -594,15 +672,17 @@ function showMessage(message,t) {
 
 				//event.preventDefault();   
 				//event.stopPropagation();
-				document.getElementById(tag).className="p-2 col border rounded-3 bg-info mt-1 me-1 position-relative text-white"
+				document.getElementById(tag).className="p-2 col rounded-3 bg-warning mt-1 me-1 position-relative"
 			setTimeout(()=>{
 				
 				if(message.ref.user==user.value){
 
-				document.getElementById(tag).className="p-2 col border rounded-3 bg-primary mt-1 me-1 position-relative text-white";
+				document.getElementById(tag).className="p-2 col rounded-3 mt-1 me-1 position-relative";
+				document.getElementById(tag).style.backgroundColor="#aadf91";
 				}
 				else{
-					document.getElementById(tag).className="p-2 rounded-3 border mt-1 ms-1   bg-secondary text-white position-relative";
+					document.getElementById(tag).className="p-2 rounded-3 mt-1 ms-1  bg-light  position-relative";
+					
 				}
 			},4000);
 
@@ -614,13 +694,15 @@ function showMessage(message,t) {
 	if(t=="me"){
 		
 		div.className="mt-1 col-10 offset-2";
-		dt.className="text-muted";
+		dt.className="bg-transparent border mt-1 border-secondary rounded-3 opacity-25";
 		divp.className ="d-flex ";
-		divf.className ="p-2 col border rounded-3 bg-primary mt-1 me-1 position-relative text-white text-break";
-		ref.className ="p-1  border-start border-white  border-5 o mb-1 rounded-3 ";
+		divf.className ="p-2 col  rounded-3  mt-1 me-1 position-relative text-break";
+		divf.style.backgroundColor="#aadf91";
+		ref.className ="p-1  border-start  border-danger border-5 o mb-1 rounded-3 ";
 		img.src="bbb.jpeg";
-		ref.style.backgroundColor = "#6a5aeb";
-		svg.setAttribute("fill","#0d6efd")
+
+		ref.style.backgroundColor = "#9ae68f";
+		svg.setAttribute("fill","#aadf91")
 		
 		svg.setAttribute("class","position-absolute top-0 start-100 translate-middle mt-1 bi bi-caret-down-fill");
 		
@@ -643,13 +725,13 @@ function showMessage(message,t) {
 	
 		aut.textContent=message.id;
 		div.className="mt-1 col-10";
-		dt.className="text-muted";
+		dt.className="bg-transparent border-secondary border ms-1 rounded-3";
 		divp.className ="d-flex ";
-		divf.className="p-2 rounded-3 text-break border mt-1 ms-1   bg-secondary text-white position-relative";
-		ref.className="p-1  border-start border-white border-5 o mb-1 rounded-3 ";
-		ref.style.backgroundColor = "#8c8b94";
+		divf.className="p-2 rounded-3 text-break  mt-1 ms-1   bg-light  position-relative";
+		ref.className="p-1  border-start border-success border-5 o mb-1 rounded-3 ";
+		ref.style.backgroundColor = "#e9ecef";
 		img.src="aaa.png";
-		svg.setAttribute("fill","#6c757d")
+		svg.setAttribute("fill","#f8f9fa")
 		
 		svg.setAttribute("class","position-absolute top-0 start-0 translate-middle mt-1 bi bi-caret-down-fill");
 
