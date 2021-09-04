@@ -19,14 +19,14 @@ const wss = new ws.Server({noServer: true});
 
 //Postgres
 //-------------------------
-const { Client } = require('pg');
+/*const { Client } = require('pg');
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
-});
+});*/
 
 
 
@@ -163,17 +163,16 @@ function accept(req, res) {
     fs.createReadStream('node_modules/push.js/bin/push.min.js').pipe(res);
   } 
 
-  else if(req.url == "/pg"){
+  /*else if(req.url == "/pg"){
     client.connect();
-
-client.query('select * from salles;', (err, res) => {
-  if (err) throw err;
-  for (let row of res.rows) {
-    console.log(JSON.stringify(row));
-  }
-  client.end();
-});
-  }
+    client.query('select * from salles;', (err, res) => {
+      if (err) throw err;
+      for (let row of res.rows) {
+        console.log(JSON.stringify(row));
+      }
+      client.end();
+    });
+  }*/
 
   else { // page not found
     res.writeHead(404);
