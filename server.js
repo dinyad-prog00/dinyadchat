@@ -17,6 +17,28 @@ var tag=0;
 
 const wss = new ws.Server({noServer: true});
 
+//Postgres
+//-------------------------
+const { Client } = require('pg');
+
+console.log(process.env.DATABASE_URL)
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+client.connect();
+
+client.query('inser into salles (key,value ) values ("salles","{}");', (err, res) => {
+  if (err) throw err;
+  /*for (let row of res.rows) {
+    console.log(JSON.stringify(row));
+  }*/
+  client.end();
+});
+
 const clients = new Set();
 const pseudos = new Set();
 
@@ -149,6 +171,17 @@ function accept(req, res) {
   else if (req.url == '/push.min.js') { // index.html
     fs.createReadStream('node_modules/push.js/bin/push.min.js').pipe(res);
   } 
+
+  else if(req.url == "/pg"){
+    client.query('inser into salles (key,value ) values ("salles","{}");', (err, res) => {
+  if (err) throw err;
+  /*for (let row of res.rows) {
+    console.log(JSON.stringify(row));
+  }*/
+  return {"h":"heolo"};
+  client.end();
+});
+  }
 
   else { // page not found
     res.writeHead(404);
